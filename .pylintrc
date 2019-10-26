@@ -1,0 +1,5 @@
+[IMPORTS]
+ignored-modules=maya.cmds,maya.OpenMaya,maya.mel,PyQt4,PyQt5,PySide,PySide2.*,sip,shiboken
+
+[FORMAT]
+max-line-length=120

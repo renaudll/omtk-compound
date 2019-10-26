@@ -1,0 +1,8 @@
+[run]
+omit =
+    # Ignore vendored packages
+    */vendor/*
+    # Ignore pysideuic packages
+    */ui/*
+    # Ignore widgets, for now as they are not in development
+    */widgets/*
