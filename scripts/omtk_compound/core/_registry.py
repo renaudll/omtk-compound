@@ -34,7 +34,7 @@ class VersionStream(dict):
     def latest(self):
         """
         :return: The highest version available
-        :rtype: :class:`omtk_compound.core.Registry`
+        :rtype: :class:`omtk_compound.core.CompoundDefinition`
         """
         key = sorted(self.keys())[-1]
         return self[key]

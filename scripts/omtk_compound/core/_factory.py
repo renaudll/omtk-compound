@@ -6,7 +6,7 @@ import logging
 import pymel.core as pymel
 from maya import cmds
 
-from omtk_compound.core._compound import Compound
+from omtk_compound.core._compound import Compound, ComponentValidationError
 from omtk_compound.core._constants import (
     INPUT_NODE_NAME,
     OUTPUT_NODE_NAME,
@@ -121,6 +121,22 @@ def from_namespace(namespace):
     inst = Compound(namespace)
     inst.validate()
     return inst
+
+
+def from_scene():
+    """
+    Return all compound in the scene.
+
+    :return: A compound generator
+    :rtype: Generator[omtk_compound.Compound]
+    """
+    cmds.namespace(setNamespace=':')
+    namespaces = cmds.namespaceInfo(listOnlyNamespaces=True, recurse=True)
+    for namespace in namespaces:
+        try:
+            yield Compound(namespace)
+        except ComponentValidationError:
+            pass
 
 
 def from_attributes(attrs_inn, attrs_out, dagnodes=None, namespace=COMPOUND_DEFAULT_NAMESPACE):

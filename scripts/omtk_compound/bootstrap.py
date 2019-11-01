@@ -38,6 +38,12 @@ _ENTRIES = (
         "omtk_compound_add_attribute",
         "from omtk_compound import macros; macros.show_form_add_attribute()",
     ),
+    (
+        "Manage compounds",
+        "manage",
+        "omtk_compound_manager",
+        "from omtk_compound import macros; macros.show_compound_manager()"
+    )
 )
 
 
