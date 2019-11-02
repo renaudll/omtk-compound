@@ -1,6 +1,6 @@
 from maya import cmds
 
-from omtk_compound.core._utils_attr import transfer_attribute
+from omtk_compound.core._utils_attr import expose_attribute
 
 
 def test_transfer_attribute_single_scalar():
@@ -10,7 +10,7 @@ def test_transfer_attribute_single_scalar():
     dst = cmds.createNode("transform", name="dst")
     cmds.addAttr(src, longName="test")
 
-    transfer_attribute(src, dst, "test")
+    expose_attribute(src, dst, "test")
 
     assert cmds.objExists("dst.test")
     # TODO: Validate more about the attribute?
@@ -25,6 +25,6 @@ def test_transform_attribute_child_scalar_to_single_scalar():
     cmds.addAttr(src, longName="testX", at="float", parent="test")
     cmds.addAttr(src, longName="testY", at="float", parent="test")
 
-    transfer_attribute(src, dst, "testY")
+    expose_attribute(src, dst, "testY")
 
     assert cmds.objExists("dst.testY")

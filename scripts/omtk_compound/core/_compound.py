@@ -279,16 +279,26 @@ class Compound(object):
         :return: The dagpath of the exposed attribute
         :raises: ValueError: If the attribute is the destination of an existing connection.
         """
-        dagpath = (
-            dagpath.__melobject__() if hasattr(dagpath, "__melobject__") else dagpath
-        )
+        # TODO: Remove pymel usage
+        attr = pymel.Attribute(dagpath)
+        dagpath = str(attr)
+
+        # TODO: Solidify array element support with appropriate tests
+        attr = attr.array() if attr.isElement() else attr
+        if not cmds.attributeQuery(attr.longName(), node=str(attr.node()), writable=True):
+            raise ValueError("Cannot expose un-writable attribute %r as an input." % dagpath)
 
         if cmds.connectionInfo(dagpath, isDestination=True):
             raise ValueError("Cannot expose a destination attribute: %r" % dagpath)
 
         # TODO: Manage name collision
-        src_node, attr_name = dagpath.split(".")
-        src_dagpath = _utils_attr.transfer_attribute(src_node, self.input, attr_name)
+        src_node = str(attr.node())
+        src_dagpath = _utils_attr.expose_attribute(src_node, self.input, attr.longName())
+
+        # Our reference attribute might not be "readable" (a possible connection destination).
+        # TODO: Don't use pymel?
+        mattr = pymel.Attribute(src_dagpath).__apimattr__()
+        mattr.setReadable(True)
 
         cmds.connectAttr(src_dagpath, dagpath)
 
@@ -302,20 +312,26 @@ class Compound(object):
         :return: The dagpath of the exposed attribute
         :raises: ValueError: If the attribute is the source of an existing connection.
         """
-        dagpath = (
-            dagpath.__melobject__() if hasattr(dagpath, "__melobject__") else dagpath
-        )
+        # TODO: Remove pymel usage
+        attr = pymel.Attribute(dagpath)
+        dagpath = str(attr)
+
+        # TODO: Solidify array element support with appropriate tests
+        attr_to_check = attr.array() if attr.isElement() else attr
+        if not cmds.attributeQuery(attr_to_check.longName(), node=str(attr.node()), readable=True):
+            raise ValueError("Cannot expose un-readable attribute %r as an output." % dagpath)
 
         if cmds.connectionInfo(dagpath, isSource=True):
             raise ValueError("Cannot expose a source attribute: %r" % dagpath)
 
         # TODO: Manage name collision
-        src_node, attr_name = dagpath.split(".")
-        dst_dagpath = _utils_attr.transfer_attribute(src_node, self.output, attr_name)
+        src_node = str(attr.node())
+        attr_name = str(attr.longName())
+        dst_dagpath = _utils_attr.expose_attribute(src_node, self.output, attr_name)
 
         # Our reference attribute might not be "writable" (a possible connection source).
-        # TODO: Don't use pymel?
-        pymel.Attribute(dst_dagpath).__apimattr__().setWritable(True)
+        mattr = pymel.Attribute(dst_dagpath).__apimattr__()
+        mattr.setWritable(True)
 
         cmds.connectAttr(dagpath, dst_dagpath)
 

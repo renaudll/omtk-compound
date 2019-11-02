@@ -57,19 +57,19 @@ def relative_namespace(namespace, parent_namespace):
     return namespace
 
 
-def get_unique_namespace(namespace):
+def get_unique_namespace(namespace, pool=None):
     """
     :param str namespace: The start namespace
     :return: A unique namespace
     :rtype namespace
     """
-    all_namespaces = get_all_namespaces()
+    pool = pool or get_all_namespaces()
     prefix, suffix = re.match(
         r"^(?P<prefix>[\w:]*?)(?P<suffix>\d*)$", namespace
     ).groups()
     suffix = int(suffix) if suffix else 0
     guess = namespace
-    while guess in all_namespaces:
+    while guess in pool:
         suffix += 1
         guess = prefix + str(suffix)
     return guess

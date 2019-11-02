@@ -197,28 +197,6 @@ def test_has_output_attr(cmds, compound):
     assert compound.has_output_attr("testOutput")
 
 
-def test_expose_input_attr(cmds, compound):
-    """Validate we can expose an simple scalar compound attribute"""
-    cmds.addAttr("test:foobar", longName="testAttr")
-    compound.expose_input_attr("test:foobar.testAttr")
-    assert cmds.objExists("test:inputs.testAttr")
-
-    # Validate connection
-    actual = cmds.connectionInfo("test:inputs.testAttr", destinationFromSource=True)[0]
-    assert actual == "test:foobar.testAttr"
-
-
-def test_expose_output_attr(cmds, compound):
-    """Validate we can expose a simple scalar attribute as an output"""
-    cmds.addAttr("test:foobar", longName="testAttr")
-    compound.expose_output_attr("test:foobar.testAttr")
-    assert cmds.objExists("test:outputs.testAttr")
-
-    # Validate connection
-    actual = cmds.connectionInfo("test:outputs.testAttr", sourceFromDestination=True)
-    assert actual == "test:foobar.testAttr"
-
-
 def test_get_connections(cmds, compound2):
     actual = compound2.get_connections()
     expected = (

@@ -236,12 +236,19 @@ def _get_attributes_map_from_nodes(nodes):
     )
 
     for dst, src in pairwise(input_connections):
-        if pymel.Attribute(src).node() in nodes_pm:
+        # Ignore message connection
+        attr = pymel.Attribute(src)
+        if attr.type() == "message":
+            continue
+        if attr.node() in nodes_pm:
             continue
         map_inputs.append(dst)
 
     for src, dst in pairwise(output_connections):
-        if pymel.Attribute(dst).node() in nodes_pm:
+        attr = pymel.Attribute(dst)
+        if attr.type() == "message":
+            continue
+        if attr.node() in nodes_pm:
             continue
         map_outputs.append(src)
 
