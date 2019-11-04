@@ -60,6 +60,13 @@ def expose_attribute(src_node, dst_node, src_name, dst_name=None):
         mfn_attr = OpenMaya.MFnCompoundAttribute(mfn_attr.object())
         mel_cmds = []
         mfn_attr.getAddAttrCmds(mel_cmds)
+
+        # Rename the children parent attributes
+        mel_cmds = [
+            mel_cmd.replace('-p "%s"' % attr_long_name, '-p "%s"' % unique_long_name)
+            for mel_cmd in mel_cmds
+        ]
+
     else:
         mel_cmd = mfn_attr.getAddAttrCmd()
         # If we are transferring a child attribute we want to ignore any parent he might have.
@@ -81,14 +88,14 @@ def expose_attribute(src_node, dst_node, src_name, dst_name=None):
     _LOG.info("Replacing long name %r by %r...", src_name, unique_long_name)
     mel_cmds = [
         # Note: Last quote (") is missing by purpose
-        re.sub(r'-ln "\w+', '-ln "%s' % unique_long_name, mel_cmd)
+        mel_cmd.replace('-ln "%s' % attr_long_name, '-ln "%s' % unique_long_name)
         for mel_cmd in mel_cmds
     ]
 
     _LOG.info("Replacing short name %r by %r...", attr_short_name, unique_short_name)
     mel_cmds = [
         # Note: Last quote (") is missing by by purpose
-        re.sub(r'-sn "\w+', '-sn "%s' % unique_short_name, mel_cmd)
+        mel_cmd.replace('-sn "%s' % attr_short_name, '-sn "%s' % unique_short_name)
         for mel_cmd in mel_cmds
     ]
 

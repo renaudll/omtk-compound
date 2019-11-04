@@ -20,6 +20,23 @@ def compound(scene):
     return Compound("test")
 
 
+def test_expose_compound_attr(cmds):
+    """Validate we can export a simple compound attribute."""
+    src = cmds.createNode("transform", name="src")
+    dst = cmds.createNode("network", name="dst")
+
+    expose_attribute(src, dst, "translate")
+
+    assert cmds.objExists("dst.translate")
+    assert cmds.objExists("dst.translateX")
+    assert cmds.objExists("dst.translateY")
+    assert cmds.objExists("dst.translateZ")
+    assert cmds.attributeQuery("translate", node="dst", shortName=True) == "t"
+    assert cmds.attributeQuery("translate", node="dst", shortName=True) == "tx"
+    assert cmds.attributeQuery("translate", node="dst", shortName=True) == "ty"
+    assert cmds.attributeQuery("translate", node="dst", shortName=True) == "tz"
+
+
 def test_expose_element_attr(cmds):
     """Validate we can export an element attribute to a single attribute."""
     src = cmds.createNode("network", name="src")
@@ -33,28 +50,27 @@ def test_expose_element_attr(cmds):
     assert not is_multi
 
 
-def test_expose_attr_with_same_name(cmds):
+def test_expose_multiple_compound_attr_with_same_name(cmds):
     """Validate we can expose two attributes that have the same names."""
-    src1 = cmds.createNode("network", name="src2")
-    src2 = cmds.createNode("network", name="src2")
-    src3 = cmds.createNode("network", name="src2")
+    src1 = cmds.createNode("transform", name="src1")
+    src2 = cmds.createNode("transform", name="src2")
     dst = cmds.createNode("network", name="dst")
 
-    cmds.addAttr(src1, longName="testAttr", shortName="ta")
-    cmds.addAttr(src2, longName="testAttr", shortName="ta")
-    cmds.addAttr(src3, longName="testAttr", shortName="ta")
+    expose_attribute(src1, dst, "translate")
+    expose_attribute(src2, dst, "translate")
 
-    expose_attribute(src1, dst, "testAttr")
-    expose_attribute(src2, dst, "testAttr")
-    expose_attribute(src3, dst, "testAttr")
-
-    assert cmds.objExists("dst.testAttr")
-    assert cmds.objExists("dst.testAttr1")
-    assert cmds.objExists("dst.testAttr2")
-
-    assert cmds.attributeQuery("testAttr", node="dst", shortName=True) == "ta"
-    assert cmds.attributeQuery("testAttr1", node="dst", shortName=True) == "ta1"
-    assert cmds.attributeQuery("testAttr2", node="dst", shortName=True) == "ta2"
+    for longName, shortName in (
+            ("translate", "t"),
+            ("translateX", "tx"),
+            ("translateY", "ty"),
+            ("translateZ", "tz"),
+            ("translate1", "t1"),
+            ("translate1X", "t1x"),
+            ("translate1Y", "t1y"),
+            ("translate1Z", "t1z"),
+    ):
+        assert cmds.objExists("dst.%s" % longName)
+        assert cmds.attributeQuery(shortName, node="dst", shortName=True) == shortName
 
 
 def test_expose_input_attr(cmds, compound):
