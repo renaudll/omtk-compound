@@ -20,7 +20,8 @@ class CompoundRegistryModel(QtCore.QAbstractTableModel):
         :param Registry registry: A compound registry
         """
         super(CompoundRegistryModel, self).__init__()
-        self.entries = [registry[uid][version] for uid, version in registry]
+        self.registry = registry
+        self.entries = sorted([registry[uid][version] for uid, version in registry])
 
     def rowCount(self, _):
         return len(self.entries)
@@ -50,7 +51,7 @@ class CompoundRegistryModel(QtCore.QAbstractTableModel):
             column = index.column()
             entry = self.entries[row]  # type: CompoundDefinition
             key = self._COLUMNS[column]
-            return getattr(entry, key)
+            return getattr(entry, key) or ''
 
         if role == DataRole:
             row = index.row()

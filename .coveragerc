@@ -5,4 +5,4 @@ omit =
     # Ignore pysideuic packages
     */ui/*
     # Ignore widgets, for now as they are not in development
-    */widgets/*
+    */widgets/ui/*

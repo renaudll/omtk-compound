@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/home/rll/dev/python/omtk/python/omtk/qt_widgets/form_publish_compound/ui/form_publish_compound.ui'
+# Form implementation generated from reading ui file '/home/rll/dev/python/omtk/python/omtk/qt_widgets/form_publish_compound/ui/form_compound_publish.ui'
 #
 # Created: Sat Sep 29 16:35:03 2018
 #      by: pyside2-uic  running on PySide2 2.0.0~alpha0

@@ -17,7 +17,7 @@ class Ui_Dialog(object):
         self.verticalLayout.setObjectName("verticalLayout")
         self.tableView = QtWidgets.QTableView(Dialog)
         self.tableView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
-        self.tableView.setObjectName("tableView")
+        self.tableView.setObjectName("tableViewInputs")
         self.verticalLayout.addWidget(self.tableView)
         self.buttonBox = QtWidgets.QDialogButtonBox(Dialog)
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)

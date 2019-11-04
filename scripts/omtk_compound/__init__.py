@@ -6,9 +6,10 @@ from omtk_compound.core import (
     CompoundDefinition,
     ComponentValidationError,
     Manager,
+    Registry,
 )
 
-__all__ = ("Compound", "CompoundDefinition", "ComponentValidationError", "manager")
+__all__ = ("Compound", "CompoundDefinition", "ComponentValidationError", "Registry", "manager")
 
 # Default manager
 manager = Manager()  # pylint: disable=invalid-name

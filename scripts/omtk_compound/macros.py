@@ -10,8 +10,9 @@ from omtk_compound import manager
 
 # Maya garbage collector hack
 _GUI_ADD_ATTRIBUTE = None
-_GUI_PUBLISH_COMPONENT = None
+_GUI_COMPOUND_PUBLISHER = None
 _GUI_COMPOUND_MANAGER = None
+_GUI_COMPOUND_EDITOR = None
 
 
 def _get_compound_from_selection():
@@ -65,13 +66,13 @@ def show_form_add_attribute():
 
 def show_form_publish_compound():
     """ Publish the selected compound. """
-    from omtk_compound.widgets.form_publish_compound import FormPublishCompound
+    from omtk_compound.widgets.form_compound_publish import FormPublishCompound
 
-    global _GUI_PUBLISH_COMPONENT
+    global _GUI_COMPOUND_PUBLISHER
 
     inst = _get_compound_from_selection()
-    _GUI_PUBLISH_COMPONENT = FormPublishCompound(inst)
-    _GUI_PUBLISH_COMPONENT.show()
+    _GUI_COMPOUND_PUBLISHER = FormPublishCompound(inst)
+    _GUI_COMPOUND_PUBLISHER.show()
 
 
 def show_compound_manager():
@@ -82,3 +83,14 @@ def show_compound_manager():
 
     _GUI_COMPOUND_MANAGER = FormCompoundManager(manager)
     _GUI_COMPOUND_MANAGER.show()
+
+
+def show_compound_editor():
+    """Manage multiple compounds"""
+    from omtk_compound.widgets.form_compound_editor import FormCompoundEditor
+
+    global _GUI_COMPOUND_EDITOR
+
+    inst = _get_compound_from_selection()
+    _GUI_COMPOUND_EDITOR = FormCompoundEditor(inst)
+    _GUI_COMPOUND_EDITOR.show()

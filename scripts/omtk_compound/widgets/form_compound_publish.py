@@ -7,7 +7,7 @@ from omtk_compound.core import CompoundDefinition
 from omtk_compound.vendor.Qt import QtWidgets
 from omtk_compound import manager
 
-from .ui import form_publish_compound as ui_def
+from .ui import form_compound_publish as ui_def
 
 
 class FormPublishCompound(QtWidgets.QMainWindow):

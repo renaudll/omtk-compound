@@ -3,6 +3,7 @@ A CompoundDefinition hold information about a registered compound.
 """
 import logging
 import uuid
+from packaging import version
 
 from omtk_compound.core._parser import write_metadata_to_ma_file, get_metadata_from_file
 
@@ -46,9 +47,29 @@ class CompoundDefinition(dict):
         _validate(self)
 
     def __repr__(self):
-        return "<CompoundDefinition %s>" % " ".join(
-            "%s=%r" % (key, val) for key, val in self.items()
+        return "<CompoundDefinition %s v%s>" % (self.name, self.version)
+
+    def __eq__(self, other):
+        return self.name == other.name and self.version == other.version
+
+    def __ne__(self, other):
+        return not self == other
+
+    def __gt__(self, other):
+        return self.name > other.name or (
+            self.name == other.name and version.parse(self.version) > version.parse(other.version)
         )
+
+    def __lt__(self, other):
+        return self.name < other.name or (
+            self.name == other.name and version.parse(self.version) < version.parse(other.version)
+        )
+
+    def __ge__(self, other):
+        return self == other or self > other
+
+    def __le__(self, other):
+        return self == other or self < other
 
     # Helper properties
     # TODO: Are these really needed?
@@ -83,7 +104,7 @@ class CompoundDefinition(dict):
         :return: The compound author
         :rtype: str
         """
-        return self["author"]
+        return self.get("author", None)
 
     @property
     def path(self):
