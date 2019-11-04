@@ -7,7 +7,7 @@ from contextlib import contextmanager
 
 import pymel.core as pymel
 from maya import OpenMaya, cmds, mel
-from omtk_compound.core import _utils, _utils_namespace
+from omtk_compound.core import _utils_namespace
 
 _LOG = logging.getLogger(__name__)
 # _LOG.setLevel(logging.DEBUG)
@@ -80,14 +80,15 @@ def expose_attribute(src_node, dst_node, src_name, dst_name=None):
     # TODO: Optimize
     _LOG.info("Replacing long name %r by %r...", src_name, unique_long_name)
     mel_cmds = [
-        mel_cmd.replace('"%s' % src_name, '"%s' % unique_long_name)
+        # Note: Last quote (") is missing by purpose
+        re.sub(r'-ln "\w+', '-ln "%s' % unique_long_name, mel_cmd)
         for mel_cmd in mel_cmds
     ]
 
     _LOG.info("Replacing short name %r by %r...", attr_short_name, unique_short_name)
     mel_cmds = [
-        # Note: The quote (") is by purpose
-        mel_cmd.replace('"%s' % attr_short_name, '"%s' % unique_short_name)
+        # Note: Last quote (") is missing by by purpose
+        re.sub(r'-sn "\w+', '-sn "%s' % unique_short_name, mel_cmd)
         for mel_cmd in mel_cmds
     ]
 

@@ -27,10 +27,34 @@ def test_expose_element_attr(cmds):
     attr_name = "testMultiAttr"
 
     cmds.addAttr(src, longName=attr_name, multi=True)
-    expose_attribute("%s.%s" % (src, attr_name), dst, attr_name)
+    expose_attribute(src, dst, attr_name)
 
     is_multi = cmds.attributeQuery(attr_name, node=dst, multi=True)
     assert not is_multi
+
+
+def test_expose_attr_with_same_name(cmds):
+    """Validate we can expose two attributes that have the same names."""
+    src1 = cmds.createNode("network", name="src2")
+    src2 = cmds.createNode("network", name="src2")
+    src3 = cmds.createNode("network", name="src2")
+    dst = cmds.createNode("network", name="dst")
+
+    cmds.addAttr(src1, longName="testAttr", shortName="ta")
+    cmds.addAttr(src2, longName="testAttr", shortName="ta")
+    cmds.addAttr(src3, longName="testAttr", shortName="ta")
+
+    expose_attribute(src1, dst, "testAttr")
+    expose_attribute(src2, dst, "testAttr")
+    expose_attribute(src3, dst, "testAttr")
+
+    assert cmds.objExists("dst.testAttr")
+    assert cmds.objExists("dst.testAttr1")
+    assert cmds.objExists("dst.testAttr2")
+
+    assert cmds.attributeQuery("testAttr", node="dst", shortName=True) == "ta"
+    assert cmds.attributeQuery("testAttr1", node="dst", shortName=True) == "ta1"
+    assert cmds.attributeQuery("testAttr2", node="dst", shortName=True) == "ta2"
 
 
 def test_expose_input_attr(cmds, compound):
