@@ -97,4 +97,5 @@ def bootstrap():
     """ Main entry point for initialization. Called from userSetup.py.
     """
     create_runtime_commands()
-    build_shelf()
+    if not cmds.about(batch=True):
+        build_shelf()
