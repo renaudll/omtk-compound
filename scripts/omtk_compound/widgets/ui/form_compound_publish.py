@@ -66,7 +66,7 @@ class Ui_MainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QtWidgets.QApplication.translate("MainWindow", "Publish Component", None, -1))
+        MainWindow.setWindowTitle(QtWidgets.QApplication.translate("MainWindow", "Publish Compound", None, -1))
         self.label_author.setText(QtWidgets.QApplication.translate("MainWindow", "Author", None, -1))
         self.label_name.setText(QtWidgets.QApplication.translate("MainWindow", "Name", None, -1))
         self.label_version.setText(QtWidgets.QApplication.translate("MainWindow", "Version", None, -1))

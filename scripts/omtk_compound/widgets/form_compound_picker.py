@@ -4,17 +4,17 @@ Modal dialog for picking a compound definition from a registry.
 from omtk_compound.core import CompoundDefinition
 from omtk_compound.vendor.Qt import QtCore, QtWidgets
 from omtk_compound.widgets.ui import form_compound_picker as ui_def
-from omtk_compound.widgets.models.model_registry import CompoundRegistryModel, DataRole
+from omtk_compound.models import CompoundRegistryModel, DataRole
 
 
-class FormComponentPicker(QtWidgets.QDialog):
+class FormCompoundPicker(QtWidgets.QDialog):
     onPicked = QtCore.Signal(CompoundDefinition)
 
     def __init__(self, registry):
         """
         :param omtk_compound.Registry registry: A compound definition registry
         """
-        super(FormComponentPicker, self).__init__()
+        super(FormCompoundPicker, self).__init__()
 
         self.ui = ui_def.Ui_Dialog()
         self.ui.setupUi(self)

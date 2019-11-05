@@ -2,7 +2,7 @@
 omit =
     # Ignore vendored packages
     */vendor/*
-    # Ignore pysideuic packages
+    # Ignore pysideuic generated packages
     */ui/*
-    # Ignore widgets, for now as they are not in development
-    */widgets/ui/*
+    # Ignore widgets, for now as they are prone to change with experimentation
+    */widgets/*

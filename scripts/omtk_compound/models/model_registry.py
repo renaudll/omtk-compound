@@ -3,8 +3,7 @@ Model for displaying a registered component definitions in a QTableView.
 """
 from omtk_compound.core._definition import CompoundDefinition
 from omtk_compound.vendor.Qt import QtCore
-
-DataRole = QtCore.Qt.UserRole + 1
+from omtk_compound.models._roles import DataRole
 
 
 class CompoundRegistryModel(QtCore.QAbstractTableModel):

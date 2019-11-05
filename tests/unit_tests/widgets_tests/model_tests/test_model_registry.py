@@ -1,7 +1,6 @@
-import mock
 import pytest
 from omtk_compound import CompoundDefinition, Registry
-from omtk_compound.widgets.models.model_registry import CompoundRegistryModel
+from omtk_compound.models import CompoundRegistryModel
 from omtk_compound.vendor.Qt import QtCore
 
 

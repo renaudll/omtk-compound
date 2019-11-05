@@ -6,23 +6,67 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>511</width>
-    <height>464</height>
+    <width>789</width>
+    <height>543</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Compound Manager</string>
+   <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout">
+   <layout class="QHBoxLayout" name="horizontalLayout_2">
     <item>
-     <widget class="QTreeView" name="tableView">
-      <property name="contextMenuPolicy">
-       <enum>Qt::CustomContextMenu</enum>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Outliner</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="CompoundOutlinerWidget" name="widget_outliner" native="true">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton">
+        <property name="text">
+         <string>Create</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton_2">
+        <property name="text">
+         <string>Publish</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QGroupBox" name="groupBox">
+      <property name="title">
+       <string>Editor</string>
       </property>
-      <property name="selectionMode">
-       <enum>QAbstractItemView::ExtendedSelection</enum>
-      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="CompoundEditorWidget" name="widget_editor" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </item>
    </layout>
@@ -32,13 +76,27 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>511</width>
+     <width>789</width>
      <height>20</height>
     </rect>
    </property>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>CompoundEditorWidget</class>
+   <extends>QWidget</extends>
+   <header>..widget_compound_editor.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>CompoundOutlinerWidget</class>
+   <extends>QWidget</extends>
+   <header>..widget_compound_outliner.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

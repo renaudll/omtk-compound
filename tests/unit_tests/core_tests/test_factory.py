@@ -4,7 +4,7 @@ from maya import cmds
 
 from omtk_compound.core import (
     Compound,
-    ComponentValidationError,
+    CompoundValidationError,
     create_empty,
     create_from_nodes,
     from_attributes,
@@ -128,10 +128,10 @@ def test_create_from_nodes_nested(scene):
 
 
 def test_create_from_nodes_nested_2(scene):
+    """Validate we can create a compound from a set of nodes containing another compound."""
     create_from_nodes({"c"}, namespace="namespace_b")
     create_from_nodes(
-        {"b", "namespace_b:c", "namespace_b:inputs", "namespace_b:outputs"},
-        namespace="namespace_a",
+        {"b", "namespace_b:c", "namespace_b:inputs", "namespace_b:outputs"}, namespace="namespace_a"
     )
 
     assert _ls() == {
@@ -145,6 +145,29 @@ def test_create_from_nodes_nested_2(scene):
         "d",
         "e",
     }
+
+
+def test_create_from_nodes_expose_reused_input_attributes(cmds):
+    """ Ensure that we re-use an attribute if it is used twice as the network input.
+    """
+    cmds.createNode("transform", name="input1")
+    cmds.createNode("transform", name="node1")
+    cmds.createNode("transform", name="node2")
+
+    cmds.connectAttr("input1.translateX", "node1.translateX")
+    cmds.connectAttr("input1.translateX", "node2.translateX")
+
+    create_from_nodes({"node1", "node2"}, namespace="test_namespace", expose=True)
+
+    assert _ls() == {
+        "input1",
+        "test_namespace:inputs",
+        "test_namespace:node1",
+        "test_namespace:node2",
+        "test_namespace:outputs",
+    }
+    assert cmds.listAttr("test_namespace:inputs", userDefined=True) == ["translateX"]
+    assert not cmds.listAttr("test_namespace:outputs", userDefined=True)
 
 
 def test_map_from_nodes_expose_simple(cmds):
@@ -214,9 +237,7 @@ def test_create_from_attributes_with_namespace(scene):
     cmds.rename("d", ":namespace_a:d")
     cmds.rename("e", ":namespace_a:e")
 
-    compound = from_attributes(
-        [":namespace_a:b.translateX"], [":namespace_a:d.translateX"]
-    )
+    compound = from_attributes([":namespace_a:b.translateX"], [":namespace_a:d.translateX"])
 
     assert isinstance(compound, Compound)
     assert _ls() == {
@@ -243,9 +264,7 @@ def test_from_namespace_non_existent_namespace():
     with pytest.raises(ValueError) as error:
         from_namespace("a_namespace_that_do_not_exist")
 
-    assert (
-        str(error.value) == "Namespace 'a_namespace_that_do_not_exist' does not exist."
-    )
+    assert str(error.value) == "Namespace 'a_namespace_that_do_not_exist' does not exist."
 
 
 def test_from_namespace_missing_input():
@@ -253,7 +272,7 @@ def test_from_namespace_missing_input():
     cmds.namespace(addNamespace=":a")
     cmds.createNode("transform", name=":a:inputs")
 
-    with pytest.raises(ComponentValidationError) as error:
+    with pytest.raises(CompoundValidationError) as error:
         from_namespace("a")
 
     assert str(error.value) == "'a:outputs' don't exist."
@@ -264,7 +283,7 @@ def test_from_namespace_missing_output():
     cmds.namespace(addNamespace=":a")
     cmds.createNode("transform", name=":a:outputs")
 
-    with pytest.raises(ComponentValidationError) as error:
+    with pytest.raises(CompoundValidationError) as error:
         from_namespace("a")
 
     assert str(error.value) == "'a:inputs' don't exist."

@@ -39,10 +39,34 @@ _ENTRIES = (
         "from omtk_compound import macros; macros.show_form_add_attribute()",
     ),
     (
-        "Manage compounds",
-        "manage",
+        "Compound Outliner",
+        "outliner",
+        "omtk_compound_outliner",
+        "from omtk_compound import macros; macros.show_compound_outliner()",
+    ),
+    (
+        "Compound Editor",
+        "editor",
+        "omtk_compound_editor",
+        "from omtk_compound import macros; macros.show_compound_editor()",
+    ),
+    (
+        "Compound Library",
+        "library",
+        "omtk_compound_library",
+        "from omtk_compound import macros; macros.show_compound_library()",
+    ),
+    (
+        "Compound Reload",
+        "reload",
+        "omtk_compound_reload",
+        "from omtk_compound import macros; macros._reload()",
+    ),
+    (
+        "Compound Manager",
+        "manager",
         "omtk_compound_manager",
-        "from omtk_compound import macros; macros.show_compound_manager()"
+        "from omtk_compound import macros; macros.show_compound_manager()",
     )
 )
 

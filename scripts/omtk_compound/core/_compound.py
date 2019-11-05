@@ -1,5 +1,5 @@
 """
-A Component represent encapsulation in Maya via a namespace and an input and output attribute holder networks.
+A Compound represent encapsulation in Maya via a namespace and an input and output attribute holder networks.
 """
 import logging
 import six
@@ -14,11 +14,11 @@ from omtk_compound.core import _utils_attr, _utils_namespace
 log = logging.getLogger(__name__)
 
 
-class ComponentError(Exception):
+class CompoundError(Exception):
     """Base class for a compound related error"""
 
 
-class ComponentValidationError(ComponentError):
+class CompoundValidationError(CompoundError):
     """Exception raised when a compound object is invalid"""
 
 
@@ -30,7 +30,7 @@ class Compound(object):
     def __init__(self, namespace):
         """
         :param str namespace: A namespace
-        :raises ComponentValidationError: If the namespace don't contain a valid compound.
+        :raises CompoundValidationError: If the namespace don't contain a valid compound.
         """
         self._inputs = {}
         self._outputs = {}
@@ -41,7 +41,7 @@ class Compound(object):
         self.validate()
 
     def __str__(self):
-        return "<Component %r>" % self.dagpath
+        return "<Compound %r>" % self.dagpath
 
     def __len__(self):
         """ The number of nodes inside the compound.
@@ -63,16 +63,6 @@ class Compound(object):
         :rtype: str
         """
         return self.dagpath
-
-    def validate(self):
-        """ Validate the compound. Raise an exception in case of failure.
-
-        :raises ComponentValidationError: If the compound don't validate.
-        """
-        if not cmds.objExists(self.input):
-            raise ComponentValidationError("%r don't exist." % self.input)
-        if not cmds.objExists(self.output):
-            raise ComponentValidationError("%r don't exist." % self.output)
 
     @property
     def nodes(self):
@@ -117,6 +107,18 @@ class Compound(object):
         attr_names = cmds.listAttr(self.output, userDefined=True) or []
         prefix = self.output + "."
         return [prefix + attr_name for attr_name in attr_names]
+
+    def validate(self):
+        """ Validate the compound. Raise an exception in case of failure.
+
+        :raises CompoundValidationError: If the compound don't validate.
+        """
+        if self.namespace in ("UI",):
+            raise CompoundValidationError("Namespace %s is blacklisted." % (self.namespace))
+        if not cmds.objExists(self.input):
+            raise CompoundValidationError("%r don't exist." % self.input)
+        if not cmds.objExists(self.output):
+            raise CompoundValidationError("%r don't exist." % self.output)
 
     def get_metadata(self):
         """ A compound can have associated metadata.
@@ -211,10 +213,6 @@ class Compound(object):
 
                 # Fetch current file
                 cmds.file(rename=current_path)
-
-    def import_(self):
-        """Import a compound saved to a .ma or mb file to maya."""
-        cmds.namespace(mergeNamespaceWithParent=True, removeNamespace=self.namespace)
 
     def delete(self):
         """Delete the content of a compound and it's associated namespace(s)."""
@@ -426,3 +424,13 @@ class Compound(object):
         cmds.namespace(moveNamespace=(self.namespace, new_namespace))
         cmds.namespace(removeNamespace=old_namespace)
         self.namespace = new_namespace
+
+    def generate_docstring(self):
+        result = ""
+        result += "Inputs:\n"
+        for input_ in self.inputs:
+            result += " -%s\n" % input_.split('.')[-1]
+        result += "Outputs:\n"
+        for output in self.outputs:
+            result += " -%s\n" % output.split('.')[-1]
+        return result

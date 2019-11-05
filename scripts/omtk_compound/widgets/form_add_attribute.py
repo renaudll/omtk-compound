@@ -1,4 +1,4 @@
-""" Helper UI to create "Component". """
+""" Helper UI to create Compound. """
 import logging
 
 import pymel.core as pymel

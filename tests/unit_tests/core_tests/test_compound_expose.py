@@ -32,9 +32,9 @@ def test_expose_compound_attr(cmds):
     assert cmds.objExists("dst.translateY")
     assert cmds.objExists("dst.translateZ")
     assert cmds.attributeQuery("translate", node="dst", shortName=True) == "t"
-    assert cmds.attributeQuery("translate", node="dst", shortName=True) == "tx"
-    assert cmds.attributeQuery("translate", node="dst", shortName=True) == "ty"
-    assert cmds.attributeQuery("translate", node="dst", shortName=True) == "tz"
+    assert cmds.attributeQuery("translateX", node="dst", shortName=True) == "tx"
+    assert cmds.attributeQuery("translateY", node="dst", shortName=True) == "ty"
+    assert cmds.attributeQuery("translateZ", node="dst", shortName=True) == "tz"
 
 
 def test_expose_element_attr(cmds):
@@ -84,7 +84,7 @@ def test_expose_input_attr(cmds, compound):
     assert actual == "test:foobar.testAttr"
 
 
-def test_expose_input_attr_non_readable(cmds, compound):
+def test_expose_input_attr_unreadable(cmds, compound):
     """Validate that when we expose an unreadable input attribute it become readable."""
     cmds.addAttr("test:foobar", longName="testAttr", readable=False)
     compound.expose_input_attr("test:foobar.testAttr")
@@ -93,7 +93,7 @@ def test_expose_input_attr_non_readable(cmds, compound):
     assert cmds.attributeQuery("testAttr", node="test:inputs", writable=True)
 
 
-def test_expose_input_attr_non_writable(cmds, compound):
+def test_expose_input_attr_unwritable(cmds, compound):
     """Validate that we cannot expose an un-writable attribute as an output"""
     cmds.addAttr("test:foobar", longName="testAttr", writable=False)
     with pytest.raises(ValueError) as error:
@@ -135,3 +135,9 @@ def test_expose_output_attr_non_writable(cmds, compound):
 
     assert cmds.attributeQuery("testAttr", node="test:outputs", readable=True)
     assert cmds.attributeQuery("testAttr", node="test:outputs", writable=True)
+
+
+def test_generate_docstring(cmds, compound):
+    actual = compound.generate_docstring()
+    expected = "Inputs:\nOutputs:\n"
+    assert actual == expected

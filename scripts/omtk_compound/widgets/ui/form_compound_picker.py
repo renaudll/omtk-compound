@@ -31,5 +31,5 @@ class Ui_Dialog(object):
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):
-        Dialog.setWindowTitle(QtWidgets.QApplication.translate("Dialog", "Component Picker", None, -1))
+        Dialog.setWindowTitle(QtWidgets.QApplication.translate("Dialog", "Compound Picker", None, -1))
 

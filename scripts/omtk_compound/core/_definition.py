@@ -3,9 +3,9 @@ A CompoundDefinition hold information about a registered compound.
 """
 import logging
 import uuid
-from packaging import version
 
 from omtk_compound.core._parser import write_metadata_to_ma_file, get_metadata_from_file
+from omtk_compound.vendor.packaging import version
 
 _LOG = logging.getLogger(__name__)
 
@@ -43,6 +43,7 @@ class CompoundDefinition(dict):
 
         self["uid"] = self.get("uid", None) or str(uuid.uuid4())
         self["version"] = self.get("version") or "0.0.0"
+        self["description"] = self.get("description") or ""
 
         _validate(self)
 
@@ -113,6 +114,14 @@ class CompoundDefinition(dict):
         :rtype: str
         """
         return self["path"]
+
+    @property
+    def description(self):
+        """
+        :return: The compound description provided by the author
+        :rtype: str
+        """
+        return self["description"]
 
     # Class constructors
 

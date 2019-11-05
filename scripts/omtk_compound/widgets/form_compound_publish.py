@@ -1,5 +1,5 @@
 """
-Helper UI to create "Component".
+Window used to publish a new compound version.
 """
 import uuid
 
@@ -11,6 +11,9 @@ from .ui import form_compound_publish as ui_def
 
 
 class FormPublishCompound(QtWidgets.QMainWindow):
+    """
+    Window used to publish a new compound version.
+    """
     def __init__(self, compound):
         """
         :param omtk_compound.Compound compound: The compound to publish
@@ -30,7 +33,7 @@ class FormPublishCompound(QtWidgets.QMainWindow):
         """
         :param omtk_compound.Compound compound: The compound to load
         """
-        metadata = compound.get_metadata()
+        metadata = CompoundDefinition(**compound.get_metadata())
 
         self.ui.lineEdit_name.setText(metadata.get("name"))
         self.ui.lineEdit_author.setText(
@@ -38,6 +41,10 @@ class FormPublishCompound(QtWidgets.QMainWindow):
         )
         self.ui.lineEdit_version.setText(metadata.get("version") or "0.0.1")
         self.ui.lineEdit_uid.setText(metadata.get("uid") or str(uuid.uuid4()))
+
+        description = metadata.description
+        description = description or compound.generate_docstring()
+        self.ui.plainTextEdit_publish_message.setPlainText(description)
 
     def get_definition(self):
         """
@@ -48,7 +55,8 @@ class FormPublishCompound(QtWidgets.QMainWindow):
         author = self.ui.lineEdit_author.text()
         version = self.ui.lineEdit_version.text()
         uid = self.ui.lineEdit_uid.text()
-        return CompoundDefinition(name=name, author=author, version=version, uid=uid)
+        description = self.ui.plainTextEdit_publish_message.toPlainText()
+        return CompoundDefinition(name=name, author=author, version=version, uid=uid, description=description)
 
     def on_submit(self):
         compound = self._compound

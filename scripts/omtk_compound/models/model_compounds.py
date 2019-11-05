@@ -2,8 +2,7 @@
 Model for displaying compounds in a QTableView.
 """
 from omtk_compound.vendor.Qt import QtCore
-
-QDataRole = QtCore.Qt.UserRole + 1
+from omtk_compound.models._roles import DataRole
 
 
 class CompoundManagerModel(QtCore.QAbstractTableModel):
@@ -79,7 +78,7 @@ class CompoundManagerModel(QtCore.QAbstractTableModel):
             if column == 3:
                 return self.statuses[row]
 
-        if role == QDataRole:
+        if role == DataRole:
             row = index.row()
             entry = self.entries[row]
             return entry

@@ -160,3 +160,16 @@ def context_disconnected_attrs(attrs, hold_inputs=True, hold_outputs=True):
     data = hold_connections(attrs, hold_inputs=hold_inputs, hold_outputs=hold_outputs)
     yield
     fetch_connections(data)
+
+
+def reorder_attributes(node, attributes):
+    """
+    :param str node: The node containing the attributes to re-order
+    :param attributes: The attributes names, sorted in the desired order
+    """
+    cmds.undoInfo(openChunk=True)
+    for attribute in reversed(attributes):
+        attr_path = "%s.%s" % (node, attribute)
+        cmds.deleteAttr(attr_path)
+    cmds.undoInfo(closeChunk=True)
+    cmds.undo()

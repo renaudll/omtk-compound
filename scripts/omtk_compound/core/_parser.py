@@ -64,7 +64,7 @@ def write_metadata_to_ma_file(path, metadata):
                     for key, val in metadata.iteritems():
                         fp_write.write(
                             'fileInfo "{0}{1}" "{2}";\n'.format(
-                                FILE_METADATA_PREFIX, key, val
+                                FILE_METADATA_PREFIX, key, val.replace('\n', r'\n')
                             )
                         )
                     success = True

@@ -2,7 +2,7 @@
 Private package holding the core logic.
 Do not use from outside.
 """
-from ._compound import Compound, ComponentValidationError
+from ._compound import Compound, CompoundValidationError
 from ._definition import CompoundDefinition
 from ._factory import create_empty, create_from_nodes, from_attributes, from_namespace
 from ._registry import Registry
@@ -11,7 +11,7 @@ from ._manager import Manager
 
 __all__ = (
     "Compound",
-    "ComponentValidationError",
+    "CompoundValidationError",
     "CompoundDefinition",
     "create_empty",
     "create_from_nodes",

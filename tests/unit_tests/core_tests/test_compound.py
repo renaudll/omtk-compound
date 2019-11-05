@@ -73,6 +73,11 @@ def test_init(scene):
     assert Compound("test")
 
 
+def test_str(compound):
+    """Validate we can represent a compound as a string"""
+    assert str(compound) == "<Compound 'test'>"
+
+
 def test_input(compound):
     """Validate the `input` property"""
     assert compound.input == "test:inputs"
@@ -222,3 +227,10 @@ def test_fetch_connections(cmds, compound2):
     compound2.fetch_connections(*connections)
     assert cmds.isConnected("inputs.translateX", "test:inputs.testInput")
     assert cmds.isConnected("test:outputs.testOutput", "outputs.translateX")
+
+
+def test_optimize(compound):
+    """Validate optimizing a compound raise a NotImplementedError"""
+    # TODO: Write test
+    with pytest.raises(NotImplementedError):
+        compound.optimize()

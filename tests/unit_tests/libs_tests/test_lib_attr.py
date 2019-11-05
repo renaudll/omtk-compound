@@ -1,6 +1,6 @@
 from maya import cmds
 
-from omtk_compound.core._utils_attr import expose_attribute
+from omtk_compound.core._utils_attr import expose_attribute, reorder_attributes
 
 
 def test_transfer_attribute_single_scalar():
@@ -28,3 +28,17 @@ def test_transform_attribute_child_scalar_to_single_scalar():
     expose_attribute(src, dst, "testY")
 
     assert cmds.objExists("dst.testY")
+
+
+def test_reorder_attributes():
+    """ Validate we can re-order attributes.
+    """
+    node = cmds.createNode("transform", name="testNode")
+    cmds.addAttr(node, longName="testAttrA")
+    cmds.addAttr(node, longName="testAttrB")
+
+    assert cmds.listAttr(node, userDefined=True) == ["testAttrA", "testAttrB"]
+
+    reorder_attributes(node, ["testAttrB", "testAttrA"])
+
+    assert cmds.listAttr(node, userDefined=True) == ["testAttrB", "testAttrA"]
