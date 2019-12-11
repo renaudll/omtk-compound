@@ -3,9 +3,9 @@ A CompoundDefinition hold information about a registered compound.
 """
 import logging
 import uuid
-from packaging import version
 
 from omtk_compound.core._parser import write_metadata_to_ma_file, get_metadata_from_file
+from omtk_compound.vendor.packaging import version
 
 _LOG = logging.getLogger(__name__)
 
