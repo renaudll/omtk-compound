@@ -62,7 +62,7 @@ def write_metadata_to_ma_file(path, metadata):
                     for key, val in metadata.iteritems():
                         fp_write.write(
                             'fileInfo "{0}{1}" "{2}";\n'.format(
-                                FILE_METADATA_PREFIX, key, val.replace('\n', r'\n')
+                                FILE_METADATA_PREFIX, key, val.replace("\n", r"\n")
                             )
                         )
                     success = True
@@ -95,7 +95,8 @@ def iter_ma_file_metadata(path):
                 found = True
                 key, val = regex_result.groups()
                 yield key, val
-            # If we encountered fileInfo and suddenly stop encountering, we are finished with the file
+            # If we encountered fileInfo and suddenly stop encountering,
+            # we are finished with the file
             elif found:
                 break
 
@@ -111,6 +112,6 @@ def get_metadata_from_file(path):
     metadata = {}
     for key, val in iter_ma_file_metadata(path):
         if key.startswith(FILE_METADATA_PREFIX):
-            key = key[len(FILE_METADATA_PREFIX):]
+            key = key[len(FILE_METADATA_PREFIX) :]
             metadata[key] = None if val == "None" else val
     return metadata

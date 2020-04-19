@@ -1,4 +1,7 @@
+"""Test for omtk_compound.models.model_registry"""
+# pylint: disable=redefined-outer-name
 import pytest
+
 from omtk_compound import CompoundDefinition, Registry
 from omtk_compound.models import CompoundRegistryModel
 from omtk_compound.vendor.Qt import QtCore
@@ -6,6 +9,7 @@ from omtk_compound.vendor.Qt import QtCore
 
 @pytest.fixture
 def registry():
+    """Fixture for a preconfigured registry."""
     inst = Registry()
     inst.register(CompoundDefinition(name="component1", version="0.0.1"))
     inst.register(CompoundDefinition(name="component1", version="0.0.2"))
@@ -15,11 +19,13 @@ def registry():
 
 @pytest.fixture
 def model(registry):
+    """Fixture for a preconfigured model."""
     return CompoundRegistryModel(registry)
 
 
-def test_headerData(model):  # type: (CompoundRegistryModel) -> None
-    """ Validate our implementation of :
+def test_headerData(model):  # pylint: disable=invalid-name
+    """
+    Validate our implementation of :
     - `QAbstractItemModel.headerData`
     - `QAbstractItemModel.rowCount`
     """

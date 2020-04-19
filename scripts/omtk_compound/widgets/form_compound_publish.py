@@ -14,6 +14,7 @@ class FormPublishCompound(QtWidgets.QMainWindow):
     """
     Window used to publish a new compound version.
     """
+
     def __init__(self, compound):
         """
         :param omtk_compound.Compound compound: The compound to publish
@@ -56,9 +57,14 @@ class FormPublishCompound(QtWidgets.QMainWindow):
         version = self.ui.lineEdit_version.text()
         uid = self.ui.lineEdit_uid.text()
         description = self.ui.plainTextEdit_publish_message.toPlainText()
-        return CompoundDefinition(name=name, author=author, version=version, uid=uid, description=description)
+        return CompoundDefinition(
+            name=name, author=author, version=version, uid=uid, description=description
+        )
 
     def on_submit(self):
+        """
+        Called when the user press the publish button
+        """
         compound = self._compound
         compound_def = self.get_definition()
 

@@ -9,17 +9,25 @@ class CompoundManagerModel(QtCore.QAbstractTableModel):
     """
     Model for displaying compounds in a QTableView.
     """
+
     _COLUMNS = ["namespace", "type", "version", "status"]
 
     def __init__(self, manager, entries=None):
+        """
+        :param manager: A manager
+        :type manage: omtk_compound.Manager
+        :param entries: An optional list of compounds to display
+        :type entries: list[omtk_compound.Compound]
+        """
         super(CompoundManagerModel, self).__init__()
         self.manager = manager
         self._update(entries or [])
 
     def _get_compound_status(self, compound):
         """
-        :param Compound compound:
-        :return:
+        :param omtk_compound.Compound compound: A compound
+        :return: A status
+        :rtype: str
         """
         # TODO: Move elsewhere
         metadata = compound.get_metadata()
@@ -33,35 +41,60 @@ class CompoundManagerModel(QtCore.QAbstractTableModel):
 
         if stream.latest.version == version:
             return "latest"
-        else:
-            return "outdated"
+
+        return "outdated"
 
     def _update(self, entries):
+        """
+        Update internal model data.
+
+        :param entries: New compounds
+        :type entries: list[omtk_compound.Compound]
+        """
         self.entries = entries
         self.statuses = [self._get_compound_status(entry) for entry in entries]
 
-    def rowCount(self, _):
+    def rowCount(self, _):  # pylint: disable=invalid-name
+        """
+        Re-implement QtCore.QAbstractTableModel.rowCount
+
+        :return: The number of rows
+        :rtype: int
+        """
         return len(self.entries)
 
-    def columnCount(self, _):
+    def columnCount(self, _):  # pylint: disable=invalid-name
+        """
+        Re-implement QtCore.QAbstractTableModel.columnCount
+
+        :return: The number of columns
+        :rtype: int
+        """
         return len(self._COLUMNS)
 
-    def headerData(self, section, orientation, role):
+    def headerData(self, section, orientation, role):  # pylint: disable=invalid-name
         """
-        :param int section:
-        :param int orientation:
-        :param int role:
+        Re-implement QtCore.QAbstractTableModel.headerData
+
+        :param int section: The header section
+        :param int orientation: The header orientation
+        :param int role: The data role
         :return:
+        :rtype: str or None
         """
         if orientation == QtCore.Qt.Horizontal and role == QtCore.Qt.DisplayRole:
             return str(self._COLUMNS[section])
+        return None
 
     def data(self, index, role):
         """
+        Re-implement QtCore.QAbstractTableModel.data
+
         :param index: The data index
         :type index: QtCore.QModelIndex
         :param int role: A Qt role
         :return:
+        :rtype: str or None
         """
         if role == QtCore.Qt.DisplayRole:
             row = index.row()
@@ -82,3 +115,5 @@ class CompoundManagerModel(QtCore.QAbstractTableModel):
             row = index.row()
             entry = self.entries[row]
             return entry
+
+        return None

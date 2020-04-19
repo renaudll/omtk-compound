@@ -1,6 +1,7 @@
 """
 High levels commands made to be called from a menu, shelf, hotkey or runtime command.
 """
+# pylint: disable=global-statement
 from maya import cmds
 
 from omtk_compound.core import _utils_namespace
@@ -115,49 +116,7 @@ def show_compound_library():
 def show_compound_manager():
     """Manage multiple compounds"""
     from omtk_compound.widgets.form_component_manager import FormCompoundManager
-    from omtk_compound import manager
 
     global _GUI_COMPOUND_MANAGER
     _GUI_COMPOUND_MANAGER = FormCompoundManager(manager)
     _GUI_COMPOUND_MANAGER.show()
-
-
-def _reload():
-    """Dirty reload script for development"""
-    import omtk_compound.core._parser
-    import omtk_compound.models.model_compound
-    import omtk_compound.models.model_compounds
-    import omtk_compound.models.model_registry
-    import omtk_compound.widgets.ui.widget_attributes_editor
-    import omtk_compound.widgets.widget_attributes_editor
-    import omtk_compound.widgets.ui.widget_compound_editor
-    import omtk_compound.widgets.widget_compound_editor
-    import omtk_compound.widgets.ui.widget_compound_outliner
-    import omtk_compound.widgets.widget_compound_outliner
-    import omtk_compound.widgets.form_compound_library
-    import omtk_compound.widgets.form_compound_publish
-    import omtk_compound.widgets.ui.form_compound_manager
-    import omtk_compound.widgets.form_component_manager
-    import omtk_compound.macros
-
-    reload(omtk_compound.core._compound)
-    reload(omtk_compound.core._definition)
-    reload(omtk_compound.core._factory)
-    reload(omtk_compound.core._manager)
-    reload(omtk_compound.core._parser)
-    reload(omtk_compound.core)
-    reload(omtk_compound.models.model_compound)
-    reload(omtk_compound.models.model_compounds)
-    reload(omtk_compound.models.model_registry)
-    reload(omtk_compound.widgets.ui.widget_attributes_editor)
-    reload(omtk_compound.widgets.widget_attributes_editor)
-    reload(omtk_compound.widgets.ui.widget_compound_editor)
-    reload(omtk_compound.widgets.widget_compound_editor)
-    reload(omtk_compound.widgets.ui.widget_compound_outliner)
-    reload(omtk_compound.widgets.widget_compound_outliner)
-    reload(omtk_compound.widgets.form_compound_library)
-    reload(omtk_compound.widgets.form_compound_publish)
-    reload(omtk_compound.widgets.ui.form_compound_manager)
-    reload(omtk_compound.widgets.form_component_manager)
-    reload(omtk_compound.widgets)
-    reload(omtk_compound.macros)

@@ -1,4 +1,19 @@
+# Python
 *.pyc
+
+# Python virtualenv
+venv
+
+# Python dist
+*.egg-info/
+
+# Coverage
 .coverage
+coverage.xml
 htmlcov/
+
+# Documentation
 docs/build
+
+# Tox
+.tox

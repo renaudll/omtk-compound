@@ -10,10 +10,11 @@ from maya import OpenMaya, cmds, mel
 from omtk_compound.core import _utils_namespace
 
 _LOG = logging.getLogger(__name__)
-# _LOG.setLevel(logging.DEBUG)
 
 
-def expose_attribute(src_node, dst_node, src_name, dst_name=None):
+def expose_attribute(
+    src_node, dst_node, src_name, dst_name=None
+):  # pylint: disable=too-many-locals
     """
     Copy an existing attribute from a node to another.
 
@@ -23,11 +24,11 @@ def expose_attribute(src_node, dst_node, src_name, dst_name=None):
     :param str dst_name: An optional name of the destination attribute
     :return: The dagpath of the newly created attribute
     """
+    # TODO: Simplify logic
     src_name = src_name.split("[", 1)[0]  # remove [0]  # HACK
     dst_name = dst_name or src_name
     dst_name = dst_name.split("[", 1)[0]  # remove [0]  # HACK
     src_path = "%s.%s" % (src_node, src_name)
-    dst_path = "%s.%s" % (dst_node, dst_name)
 
     # Get MFnAttribute
     # TODO: Do it without pymel
@@ -38,7 +39,7 @@ def expose_attribute(src_node, dst_node, src_name, dst_name=None):
 
     attr_long_name = root_attr.longName()
     attr_short_name = root_attr.shortName()
-    _LOG.debug("Exposed attribute is %r" % (str(root_attr)))
+    _LOG.debug("Exposed attribute is %r", root_attr)
 
     existing_long_names = cmds.listAttr(str(dst_node))
     existing_short_names = cmds.listAttr(str(dst_node), shortNames=True)
@@ -69,14 +70,16 @@ def expose_attribute(src_node, dst_node, src_name, dst_name=None):
 
     else:
         mel_cmd = mfn_attr.getAddAttrCmd()
-        # If we are transferring a child attribute we want to ignore any parent he might have.
+        # If we are transferring a child attribute,
+        # we want to ignore any parent he might have.
         # Sadly modifying the mel script seem like the most simple way atm.
         if src_attr.isChild():
             mel_cmd = re.sub(r'-p "\w+"', "", mel_cmd)
 
         mel_cmds = [mel_cmd]
 
-    # If our compound is an element of a multi-attribute, we'll want to make the new attribute non-multi.
+    # If our compound is an element of a multi-attribute,
+    # we'll want to make the new attribute non-multi.
     # Sadly modifying the mel script seem like the most simple way atm.
 
     # src_attr_is_element = attr.isElement()

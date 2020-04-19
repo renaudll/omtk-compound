@@ -4,7 +4,8 @@ Hold the user preferences related to compounds.
 Preference are saved in option variables.
 They can be individually overwritten with environment variables.
 
-For example the "default_author" entry can be overwritten with OMTK_COMPONENT_DEFAULT_AUTHOR.
+For example the "default_author" entry
+can be overwritten with OMTK_COMPONENT_DEFAULT_AUTHOR.
 """
 import logging
 import os
@@ -109,7 +110,7 @@ class Preferences(object):
         for key in _SCHEMA:
             option_var = self._get_option_var_name(key)
             if cmds.optionVar(exists=option_var):
-                _LOG.debug("Removing optionVar %r" % option_var)
+                _LOG.debug("Removing optionVar %r", option_var)
                 cmds.optionVar(remove=option_var)
 
     # Properties

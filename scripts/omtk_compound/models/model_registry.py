@@ -22,21 +22,38 @@ class CompoundRegistryModel(QtCore.QAbstractTableModel):
         self.registry = registry
         self.entries = sorted([registry[uid][version] for uid, version in registry])
 
-    def rowCount(self, _):
+    def rowCount(self, _):  # pylint: disable=invalid-name
+        """
+        Re-implement QtCore.QAbstractTableModel.rowCount
+
+        :return: The number of rows
+        :rtype: int
+        """
         return len(self.entries)
 
-    def columnCount(self, _):
+    def columnCount(self, _):  # pylint: disable=invalid-name
+        """
+        Re-implement QtCore.QAbstractTableModel.columnCount
+
+        :return: The number of columns
+        :rtype: int
+        """
         return len(self._COLUMNS)
 
-    def headerData(self, section, orientation, role):
+    def headerData(self, section, orientation, role):  # pylint: disable=invalid-name
         """
-        :param int section:
-        :param int orientation:
-        :param int role:
+        Re-implement QtCore.QAbstractTableModel.headerData
+
+        :param int section: The header section
+        :param int orientation: The header orientation
+        :param int role: The data role
         :return:
+        :rtype: str or None
         """
         if orientation == QtCore.Qt.Horizontal and role == QtCore.Qt.DisplayRole:
             return str(self._COLUMNS[section])
+
+        return None
 
     def data(self, index, role):
         """
@@ -50,8 +67,10 @@ class CompoundRegistryModel(QtCore.QAbstractTableModel):
             column = index.column()
             entry = self.entries[row]  # type: CompoundDefinition
             key = self._COLUMNS[column]
-            return getattr(entry, key) or ''
+            return getattr(entry, key) or ""
 
         if role == DataRole:
             row = index.row()
             return self.entries[row]
+
+        return None

@@ -12,7 +12,7 @@ from omtk_compound.core._constants import (
     OUTPUT_NODE_NAME,
     COMPOUND_DEFAULT_NAMESPACE,
 )
-from omtk_compound.core._utils import get_unique_key, pairwise
+from omtk_compound.core._utils import pairwise
 
 _LOG = logging.getLogger(__name__)
 
@@ -26,6 +26,7 @@ def create_empty(namespace=COMPOUND_DEFAULT_NAMESPACE):
     :rtype: Compound
     """
     from omtk_compound.core import _utils_namespace
+
     namespace = _utils_namespace.get_unique_namespace(namespace)
 
     # Create namespace if necessary
@@ -51,11 +52,13 @@ def create_from_nodes(objs, namespace=COMPOUND_DEFAULT_NAMESPACE, expose=False):
     This will move these nodes into a unique namespace and return a compound instance.
     :param List[str] objs: A list of objects to include in the compound.
     :param str namespace: An optional namespace for the compound.
-    :param bool expose: Should we expose attributes from connection outside the nodes boundaries?
+    :param bool expose: Should we expose attributes from connection
+                        outside the nodes boundaries?
     :return: A compound object
     :rtype: Compound
     """
     from omtk_compound.core import _utils_namespace
+
     # Conform objs to pynodes
     objs = [pymel.PyNode(obj) for obj in objs]
 
@@ -66,7 +69,8 @@ def create_from_nodes(objs, namespace=COMPOUND_DEFAULT_NAMESPACE, expose=False):
     namespace = _utils_namespace.get_unique_namespace(namespace)
     cmds.namespace(add=namespace)
 
-    # TODO: Ensure namespaces are always absolute, we don't want the current namespace to play any role here.
+    # TODO: Ensure namespaces are always absolute,
+    #  we don't want the current namespace to play any role here.
     # TODO: Error out if we are breaking a compound by splitting it in two?
     for obj in objs:
         new_name = _utils_namespace.join_namespace(
@@ -114,7 +118,7 @@ def from_scene():
     :return: A compound generator
     :rtype: Generator[omtk_compound.Compound]
     """
-    cmds.namespace(setNamespace=':')
+    cmds.namespace(setNamespace=":")
     namespaces = cmds.namespaceInfo(listOnlyNamespaces=True, recurse=True)
     for namespace in namespaces:
         try:
@@ -123,7 +127,9 @@ def from_scene():
             pass
 
 
-def from_attributes(attrs_inn, attrs_out, dagnodes=None, namespace=COMPOUND_DEFAULT_NAMESPACE):
+def from_attributes(
+    attrs_inn, attrs_out, dagnodes=None, namespace=COMPOUND_DEFAULT_NAMESPACE
+):
     """
     Create a compound from a set of provided input and output attributes.
     The network node will be automatically determined.
@@ -206,13 +212,15 @@ def _expose_attributes(inst, inputs, outputs):
 
     # We can have multiple connections starting from the same attributes
     # outside the network to multiple attributes inside the network.
-    # If we encounter the same attribute twice we'll want to re-use the already existing destination.
+    # If we encounter the same attribute twice,
+    # we'll want to re-use the already existing destination.
     known_network_inputs = set()
 
     for dst_attr in inputs:
         src_attrs = _hold_input_attributes(dst_attr)
 
-        # Any source attribute we already encountered will re-use the previously exposed destination attribute.
+        # Any source attribute we already encountered
+        # will re-use the previously exposed destination attribute.
         for src_attr in src_attrs:
             if src_attr in known_network_inputs:
                 continue
@@ -231,7 +239,8 @@ def _expose_attributes(inst, inputs, outputs):
 
 def _get_nodes_from_attributes(inputs, outputs):
     """
-    Determine the common history between attributes that would be used to create a compound.
+    Determine the common history between attributes
+    that would be used to create a compound.
 
     :param list[str] inputs: A list of input attributes.
     :param list[str] outputs: A list of output attributes.
@@ -300,7 +309,9 @@ def _get_attributes_map_from_nodes(nodes):
 
 
 def _hold_input_attributes(attr):
-    """ Find all connections to a provided attribute, remove them, and return the source attributes..
+    """
+    Find all connections to a provided attribute, remove them,
+    and return the source attributes.
 
     :param str attr: A destination attribute
     :return: A list of source attribute
@@ -313,7 +324,9 @@ def _hold_input_attributes(attr):
 
 
 def _hold_output_attributes(attr):
-    """ Find all connections from a provided attribute, remote them, and return the destination attributes.
+    """
+    Find all connections from a provided attribute, remote them,
+    and return the destination attributes.
 
     :param str attr: A source attribute
     :return: A list of destination attribute

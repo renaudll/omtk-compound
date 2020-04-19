@@ -4,6 +4,7 @@ Highest logical level for compound manipulation.
 import os
 import logging
 
+from omtk_compound.core._constants import COMPOUND_DEFAULT_NAMESPACE
 from omtk_compound.core._definition import CompoundDefinition
 from omtk_compound.core._factory import from_file
 from omtk_compound.core._registry import Registry
@@ -16,17 +17,34 @@ class Manager(object):
     """
     Main point of entry for interaction with the scene, registry and preferences.
     """
+
     def __init__(self, registry=None, preferences=None):
         self.registry = registry or Registry()
         self.preferences = preferences or Preferences()
 
         self.registry.parse_directory(self.preferences.compound_location)
 
+    def create_compound(
+        self, uid=None, name=None, version=None, namespace=COMPOUND_DEFAULT_NAMESPACE
+    ):
+        """
+
+        :param uid:
+        :param name:
+        :param version:
+        :param namespace:
+        :return:
+        :raises ValueError:
+        :raises LookupError: If no compound could be found.
+        """
+        compound_def = self.registry.find(uid=uid, name=name, version=version)
+        return from_file(compound_def.path, namespace=namespace)
+
     def publish_compound(self, compound, force=False):
         """ Publish a compound
 
         :param Compound compound: The compound to publish
-        :param bool force: Should we overwrite the file if the compound is already published?
+        :param bool force: Should we overwrite if the destination file exist?
         """
         compound_def = CompoundDefinition(**compound.get_metadata())
         path = self._get_publish_location(compound_def)

@@ -67,7 +67,7 @@ _ENTRIES = (
         "manager",
         "omtk_compound_manager",
         "from omtk_compound import macros; macros.show_compound_manager()",
-    )
+    ),
 )
 
 

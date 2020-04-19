@@ -1,5 +1,8 @@
+"""Test for omtk_compound.models.model_compound"""
+# pylint: disable=redefined-outer-name
 import mock
 import pytest
+
 from omtk_compound import Compound
 from omtk_compound.models import ModelAttributes
 from omtk_compound.vendor.Qt import QtCore
@@ -7,6 +10,7 @@ from omtk_compound.vendor.Qt import QtCore
 
 @pytest.fixture
 def compound(cmds):
+    """Fixture for a preconfigured compound"""
     cmds.namespace(addNamespace="testCompound")
 
     cmds.createNode("network", name="testCompound:inputs")
@@ -21,19 +25,21 @@ def compound(cmds):
 
 @pytest.fixture
 def model(compound):
+    """Fixture for a preconfigured model"""
     return ModelAttributes(sorted(compound.inputs))
 
 
-def test_headerData(model):  # type: (ModelCompoundInputs) -> None
+def test_headerData(model):  # pylint: disable=invalid-name
     """ Validate our implementation of `QAbstractItemModel.headerData`. """
     expected = ["name", "type", "multi"]
     actual = [
-        model.headerData(row, QtCore.Qt.Horizontal, QtCore.Qt.DisplayRole) for row in range(3)
+        model.headerData(row, QtCore.Qt.Horizontal, QtCore.Qt.DisplayRole)
+        for row in range(3)
     ]
     assert actual == expected
 
 
-def test_data(model):  # type: (ModelCompoundInputs) -> None
+def test_data(model):
     """
     Validate our implementation of:
     - `QAbstractItemModel.data`
@@ -54,7 +60,7 @@ def test_data(model):  # type: (ModelCompoundInputs) -> None
     assert actual == expected
 
 
-def test_setData(cmds, model):  # type: (ModuleType, ModelCompoundInputs) -> None
+def test_setData(cmds, model):  # pylint: disable=invalid-name
     """Validate our implementation `QAbstractItemMode.setData`. """
     model.setData(model.index(0, 0), "zTestAttr1", QtCore.Qt.EditRole)
 
@@ -67,7 +73,7 @@ def test_setData(cmds, model):  # type: (ModuleType, ModelCompoundInputs) -> Non
     assert model.data(model.index(1, 0), QtCore.Qt.DisplayRole) == "testAttr2"
 
 
-def test_setData_name_clash(cmds, model):  # type: (ModuleType, ModelCompoundInputs) -> None
+def test_setData_name_clash(cmds, model):  # pylint: disable=invalid-name
     """Validate we cannot rename an attribute to a another existing one. """
     with mock.patch.object(cmds, "warning", side_effect=cmds.warning) as mocked_warning:
         # Note: "testAttr2" already exist

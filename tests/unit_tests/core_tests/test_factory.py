@@ -1,4 +1,5 @@
 """Tests for creation of compounds from various sources."""
+# pylint: disable=redefined-outer-name
 import pytest
 from maya import cmds
 
@@ -15,7 +16,10 @@ _MAYA_DEFAULT_NODES = None
 
 
 def _ls(**kwargs):
-    """Wrapper around cmds.ls that return a set of nodes without thoses that already exist in an empty scene."""
+    """
+    Wrapper around cmds.ls that return a set of nodes without thoses that
+    already exist in an empty scene.
+    """
     result = set(cmds.ls(**kwargs))
     result -= _MAYA_DEFAULT_NODES
     return result
@@ -23,14 +27,17 @@ def _ls(**kwargs):
 
 @pytest.fixture(scope="session")
 def maya_standalone(maya_standalone):
-    """After Maya initialization, store the defaults nodes so they can be excluded from `_ls` return."""
-    global _MAYA_DEFAULT_NODES
+    """
+    After Maya initialization, store the defaults nodes
+    so they can be excluded from `_ls` return.
+    """
+    global _MAYA_DEFAULT_NODES  # pylint: disable=global-statement
     _MAYA_DEFAULT_NODES = set(cmds.ls())
     return maya_standalone
 
 
 @pytest.fixture
-def scene(maya_scene):
+def scene(maya_scene):  # pylint: disable=unused-argument
     """Simple scene with nodes connected in a "daisy chain"."""
     cmds.createNode("transform", name="a")
     cmds.createNode("transform", name="b")
@@ -72,7 +79,8 @@ def test_create_empty_multiple():
     }
 
 
-def test_create_from_nodes(scene):
+@pytest.mark.usefixtures("scene")
+def test_create_from_nodes():
     """Validate we can create a compound from a set of nodes."""
     compound = create_from_nodes({"b", "c"})
 
@@ -88,7 +96,9 @@ def test_create_from_nodes(scene):
     }
 
 
-def test_create_from_nodes_namespaces(scene):
+@pytest.mark.usefixtures("scene")
+def test_create_from_nodes_namespaces():
+    """Validate we can create a compound from a set of nodes and namespace them."""
     cmds.namespace(addNamespace="namespace")
     cmds.rename("a", "namespace:a")
     cmds.rename("b", "namespace:b")
@@ -109,7 +119,8 @@ def test_create_from_nodes_namespaces(scene):
     }
 
 
-def test_create_from_nodes_nested(scene):
+@pytest.mark.usefixtures("scene")
+def test_create_from_nodes_nested():
     """Validate we can create compound inside compound from a set of nodes."""
     create_from_nodes({"b", "c", "d"}, namespace="namespace_a")
     create_from_nodes({"namespace_a:c"}, namespace="namespace_b")
@@ -127,11 +138,15 @@ def test_create_from_nodes_nested(scene):
     }
 
 
-def test_create_from_nodes_nested_2(scene):
-    """Validate we can create a compound from a set of nodes containing another compound."""
+@pytest.mark.usefixtures("scene")
+def test_create_from_nodes_nested_2():
+    """
+    Validate we can create a compound from a set of nodes containing another compound.
+    """
     create_from_nodes({"c"}, namespace="namespace_b")
     create_from_nodes(
-        {"b", "namespace_b:c", "namespace_b:inputs", "namespace_b:outputs"}, namespace="namespace_a"
+        {"b", "namespace_b:c", "namespace_b:inputs", "namespace_b:outputs"},
+        namespace="namespace_a",
     )
 
     assert _ls() == {
@@ -171,6 +186,7 @@ def test_create_from_nodes_expose_reused_input_attributes(cmds):
 
 
 def test_map_from_nodes_expose_simple(cmds):
+    """ Ensure we can create a compound from existing nodes."""
     cmds.createNode("transform", name="a")
     cmds.createNode("transform", name="b")
     cmds.createNode("transform", name="c")
@@ -212,8 +228,12 @@ def test_map_from_nodes_expose_cyclic(cmds):
         assert cmds.isConnected(src, dst)
 
 
-def test_create_from_attributes(scene):
-    """Validate that we can create compounds form an attribute map that define it's inputs and outputs."""
+@pytest.mark.usefixtures("scene")
+def test_create_from_attributes():
+    """
+    Validate that we can create compounds form an attribute map that define
+    it's inputs and outputs.
+    """
     compound = from_attributes(["b.translateX"], ["d.translateX"])
 
     assert isinstance(compound, Compound)
@@ -228,7 +248,8 @@ def test_create_from_attributes(scene):
     }
 
 
-def test_create_from_attributes_with_namespace(scene):
+@pytest.mark.usefixtures("scene")
+def test_create_from_attributes_with_namespace():
     """Validate we can create a compound from attributes in a namespace."""
     cmds.namespace(addNamespace=":namespace_a")
     cmds.rename("a", ":namespace_a:a")
@@ -237,7 +258,9 @@ def test_create_from_attributes_with_namespace(scene):
     cmds.rename("d", ":namespace_a:d")
     cmds.rename("e", ":namespace_a:e")
 
-    compound = from_attributes([":namespace_a:b.translateX"], [":namespace_a:d.translateX"])
+    compound = from_attributes(
+        [":namespace_a:b.translateX"], [":namespace_a:d.translateX"]
+    )
 
     assert isinstance(compound, Compound)
     assert _ls() == {
@@ -251,8 +274,12 @@ def test_create_from_attributes_with_namespace(scene):
     }
 
 
-def test_from_namespace_node_name(scene):
-    """Validate we raise an error if we try to create a compound from a namespace used by a node name."""
+@pytest.mark.usefixtures("scene")
+def test_from_namespace_node_name():
+    """
+    Validate we raise an error if we try to create a compound from a namespace
+    used by a node name.
+    """
     with pytest.raises(ValueError) as error:
         from_namespace("a")
 
@@ -260,15 +287,23 @@ def test_from_namespace_node_name(scene):
 
 
 def test_from_namespace_non_existent_namespace():
-    """Validate we raise an error if we try to create a compound from a namespace that does not exist."""
+    """
+    Validate we raise an error if we try to create a compound from a namespace
+    that does not exist.
+    """
     with pytest.raises(ValueError) as error:
         from_namespace("a_namespace_that_do_not_exist")
 
-    assert str(error.value) == "Namespace 'a_namespace_that_do_not_exist' does not exist."
+    assert (
+        str(error.value) == "Namespace 'a_namespace_that_do_not_exist' does not exist."
+    )
 
 
 def test_from_namespace_missing_input():
-    """Validate we raise an error if try to crete a compound from a namespace without the input node."""
+    """
+    Validate we raise an error if try to crete a compound from a namespace
+    without the input node.
+    """
     cmds.namespace(addNamespace=":a")
     cmds.createNode("transform", name=":a:inputs")
 
@@ -279,7 +314,10 @@ def test_from_namespace_missing_input():
 
 
 def test_from_namespace_missing_output():
-    """Validate we raise an error if try to crete a compound from a namespace without the output node."""
+    """
+    Validate we raise an error if try to crete a compound from a namespace
+    without the output node.
+    """
     cmds.namespace(addNamespace=":a")
     cmds.createNode("transform", name=":a:outputs")
 

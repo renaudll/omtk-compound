@@ -145,13 +145,20 @@ For example if you fix a bug in the left arm, you can republish it and update th
 
 ## Running the tests
 
-To run the tests, you'll need to have `pytest` and `pytest-cov` installed.
+
+To run the tests you'll need have tox installed.
 
 ```bash
-pip install pytest pytest-cov
+pip install tox
 ```
 
-Then, if you are on Linux or OSX you can execute `run_tests.sh`.
+Then assuming you have python-2, and maya-2020 on your system, you can run all checks with:
+
+```bash
+tox -e test-maya2020-win
+```
+
+See the `tox.ini` file for the list of all environments available.
 
 ## Contributing
 

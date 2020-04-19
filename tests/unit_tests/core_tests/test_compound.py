@@ -1,3 +1,7 @@
+"""
+Tests for omtk_compound.core._compound
+"""
+# pylint: disable=redefined-outer-name
 import os
 
 import pytest
@@ -9,7 +13,10 @@ _MAYA_DEFAULT_NODES = None
 
 
 def _ls(**kwargs):  # todo: move to a pytest helper module, how does that work again?
-    """Wrapper around cmds.ls that return a set of nodes without thoses that already exist in an empty scene."""
+    """
+    Wrapper around cmds.ls that return a set of nodes without thoses
+    that already  exist in an empty scene.
+    """
     result = set(cmds_.ls(**kwargs))
     result -= _MAYA_DEFAULT_NODES
     return result
@@ -17,8 +24,11 @@ def _ls(**kwargs):  # todo: move to a pytest helper module, how does that work a
 
 @pytest.fixture(scope="session")
 def maya_standalone(maya_standalone):
-    """After Maya initialization, store the defaults nodes so they can be excluded from `_ls` return."""
-    global _MAYA_DEFAULT_NODES
+    """
+    After Maya initialization, store the defaults nodes so they can be
+    excluded from `_ls` return.
+    """
+    global _MAYA_DEFAULT_NODES  # pylint: disable=global-statement
     _MAYA_DEFAULT_NODES = set(cmds_.ls())
     return maya_standalone
 
@@ -42,7 +52,9 @@ def scene(cmds):
 
 @pytest.fixture
 def scene_complex(cmds):
-    """Fixture for a Maya scene with one compound and connections from inside and outside."""
+    """
+    Fixture for a Maya scene with one compound and connections from inside and outside.
+    """
     cmds.namespace(addNamespace="test")
     cmds.createNode("transform", name="inputs")
     cmds.createNode("network", name="test:inputs")
@@ -59,16 +71,20 @@ def scene_complex(cmds):
 
 
 @pytest.fixture
-def compound(scene):
+def compound(scene):  # pylint: disable=unused-argument
+    """Fixture for a compound instance"""
     return Compound("test")
 
 
 @pytest.fixture
-def compound2(scene_complex):  # TODO: Merge with Component1?
+def compound2(scene_complex):  # pylint: disable=unused-argument
+    """Fixture for another compound instance"""
+    # TODO: Merge with Component1?
     return Compound("test")
 
 
-def test_init(scene):
+@pytest.mark.usefixtures("scene")
+def test_init():
     """Validate we can create a compound object from an existing namespace."""
     assert Compound("test")
 
@@ -129,6 +145,7 @@ def test_count(compound):
 
 
 def test_explode(cmds, compound):
+    """Validate we can explode a compound."""
     compound.explode()
 
     # Validate the compound bounds are removed
@@ -142,7 +159,10 @@ def test_explode(cmds, compound):
 
 
 def test_explode_namespace(cmds, compound):
-    """Validate exploding a compound with remove_namespace=True actually remove the namespace."""
+    """
+    Validate exploding a compound with remove_namespace=True
+    actually remove the namespace.
+    """
     compound.explode(remove_namespace=True)
 
     # Validate the compound bounds are removed
@@ -155,16 +175,18 @@ def test_explode_namespace(cmds, compound):
     assert not cmds.namespace(exists="test")
 
 
-def test_explode_connections(cmds, compound2):
+@pytest.mark.usefixtures("cmds")
+def test_explode_connections(compound2):
     """Validate exploding a compound preserve the connections."""
     compound2.explode()
 
 
-def test_export(cmds, compound, tmp_path):
+@pytest.mark.usefixtures("cmds")
+def test_export(compound, tmp_path):
     """Validate we can export a compound"""
-    p = str(tmp_path / "compound.ma")
-    compound.export(p)
-    assert os.path.exists(p)
+    path = str(tmp_path / "compound.ma")
+    compound.export(path)
+    assert os.path.exists(path)
 
 
 def test_delete(cmds, compound):
@@ -190,19 +212,25 @@ def test_add_output_attr(cmds, compound):
     assert cmds.getAttr("test:outputs.testOutput", type=True) == "double"
 
 
-def test_has_input_attr(cmds, compound):
+@pytest.mark.usefixtures("cmds")
+def test_has_input_attr(compound):
+    """Validate we can query if a compound have a certain input attribute."""
     assert not compound.has_input_attr("testInput")
     compound.add_input_attr("testInput")
     assert compound.has_input_attr("testInput")
 
 
-def test_has_output_attr(cmds, compound):
+@pytest.mark.usefixtures("cmds")
+def test_has_output_attr(compound):
+    """Validate we can query if a compound have a certain output attribute."""
     assert not compound.has_output_attr("testOutput")
     compound.add_output_attr("testOutput")
     assert compound.has_output_attr("testOutput")
 
 
-def test_get_connections(cmds, compound2):
+@pytest.mark.usefixtures("cmds")
+def test_get_connections(compound2):
+    """Validate we can get a compound connections."""
     actual = compound2.get_connections()
     expected = (
         {u"test:inputs.testInput": [u"inputs.translateX"]},
@@ -212,6 +240,7 @@ def test_get_connections(cmds, compound2):
 
 
 def test_hold_connections(cmds, compound2):
+    """Validate we can hold a compound connections."""
     assert cmds.isConnected("inputs.translateX", "test:inputs.testInput")
     assert cmds.isConnected("test:outputs.testOutput", "outputs.translateX")
     compound2.hold_connections()
@@ -220,6 +249,7 @@ def test_hold_connections(cmds, compound2):
 
 
 def test_fetch_connections(cmds, compound2):
+    """Validate we can fetch a compound connections."""
     # TODO: Better unit tests?
     assert cmds.isConnected("inputs.translateX", "test:inputs.testInput")
     assert cmds.isConnected("test:outputs.testOutput", "outputs.translateX")

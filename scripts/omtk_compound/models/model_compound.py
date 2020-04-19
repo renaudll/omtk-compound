@@ -10,7 +10,7 @@ from omtk_compound.core._utils_attr import reorder_attributes
 from omtk_compound.vendor.Qt import QtCore, QtGui
 
 
-log = logging.getLogger(__name__)
+_LOG = logging.getLogger(__name__)
 
 
 class ModelAttributes(QtGui.QStandardItemModel):
@@ -21,6 +21,10 @@ class ModelAttributes(QtGui.QStandardItemModel):
     _COLUMNS = ["name", "type", "multi"]
 
     def __init__(self, attributes=None):
+        """
+        :param attributes: An optional list of attributes.
+        :type attributes: list[str]
+        """
         super(ModelAttributes, self).__init__()
 
         self.setColumnCount(len(self._COLUMNS))
@@ -28,9 +32,19 @@ class ModelAttributes(QtGui.QStandardItemModel):
 
         self.set_data(attributes)
 
-    def removeRows(self, *args, **kwargs):
-        # Hack: When doing a drag and drop in Qt, it call insertRows followed by removeRows.
-        # There's indication that could call moveRows but there seem to be no point of entry for it.
+    def removeRows(self, *args, **kwargs):  # pylint: disable=invalid-name
+        """
+        Re-implement QtGui.QStandardItemModel.removeRows
+
+        :param args: Any position arguments are forwarded to the parent implementation.
+        :param kwargs: Any keyword arguments are forwarded to the parent implementation.
+        :return: Where the rows removed?
+        :rtype: bool
+        """
+        # Hack: When doing a drag and drop in Qt,
+        # it call insertRows followed by removeRows.
+        # There's indication that could call moveRows,
+        # but there seem to be no point of entry for it.
         # https://stackoverflow.com/questions/40347852/qt-qabstractitemmodel-dragdrop-for-moving-items-performs-remove-insert
         # So we'll *wrongly* assume removeRows mean the attributes have been re-ordered.
         try:
@@ -45,16 +59,22 @@ class ModelAttributes(QtGui.QStandardItemModel):
 
         node = attributes[0].split(".")[0]
         attribute_names = [attr.split(".")[-1] for attr in attributes]
-        log.info("Reordering attributes: %s, %s" % (node, attribute_names))
+        _LOG.info("Reordering attributes: %s, %s", node, attribute_names)
         reorder_attributes(node, attribute_names)
 
     def set_data(self, attributes):  # TODO: Rename
+        """
+        Set the model internal data
+
+        :param attributes: The attributes to show
+        :type attributes: list[str]
+        """
         self.beginResetModel()
         if attributes:
             self.__update(attributes)
         self.endResetModel()
 
-    def __update(self, attributes):  # (list(str)) -> TreeItem
+    def __update(self, attributes):  # pylint: disable=too-many-locals
         """
         Build the internal tree.
 
@@ -64,15 +84,16 @@ class ModelAttributes(QtGui.QStandardItemModel):
         root = self.invisibleRootItem()
         root.setDragEnabled(False)
 
+        # Note: sorted will put None first
         attributes_by_parent = itertools.groupby(
             sorted(attributes, key=_get_attribute_parent), _get_attribute_parent
         )
 
         item_by_attr = {}
-        for parent_attr, attributes in attributes_by_parent:  # Note: sorted will put None first
-            attributes = tuple(attributes)
+        for parent_attr, attributes_ in attributes_by_parent:
+            attributes_ = tuple(attributes)
 
-            for attribute in attributes:
+            for attribute in attributes_:
 
                 # Get data from attribute
                 parent = item_by_attr.get(parent_attr, root)
@@ -99,11 +120,25 @@ class ModelAttributes(QtGui.QStandardItemModel):
                 parent.appendRow([item1, item2, item3])
                 item_by_attr[attribute] = item1
 
-    def supportedDropActions(self):
+    @staticmethod
+    def supportedDropActions():  # pylint: disable=invalid-name
+        """
+        Re-implement QtCore.QAbstractItemModel.supportedDropActions
+
+        :return: The supported drop actions
+        :rtype: int
+        """
         return QtCore.Qt.MoveAction
 
-    def setData(self, index, value, role):  # type: (QtCore.QModelIndex, str, int) -> bool
-        """ Implement `QtCore.QAbstractItemModel.setData
+    def setData(self, index, value, role):  # pylint: disable=invalid-name
+        """
+        Implement `QtCore.QAbstractItemModel.setData
+
+        :param QtCore.QModelIndex index: The index to set
+        :param str value: The value to set
+        :param int role: The set role
+        :return: True if the set was successful
+        :rtype: bool
         """
         if role != QtCore.Qt.EditRole:
             return False

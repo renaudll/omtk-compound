@@ -1,11 +1,11 @@
 """ Helper UI to create Compound. """
 import logging
 
-import pymel.core as pymel
 from maya import cmds
 
 from omtk_compound.vendor.Qt import QtWidgets
 from omtk_compound.widgets.ui import form_add_attribute as ui_def
+
 
 _LOG = logging.getLogger(__name__)
 
@@ -58,6 +58,10 @@ _KWARG_MAP = {
 
 
 class FormCreateAttribute(QtWidgets.QMainWindow):
+    """
+    Form for creating an attribute on selected objects.
+    """
+
     def __init__(self):
         super(FormCreateAttribute, self).__init__()
 
@@ -98,12 +102,13 @@ class FormCreateAttribute(QtWidgets.QMainWindow):
         :param str type_: Attribute type
         :param str value: Attribute value
         """
-        kwargs = _KWARG_MAP[type]  # todo: create method?
+        kwargs = _KWARG_MAP[type_]  # todo: create method?
         kwargs["longName"] = name
-        _LOG.info("Adding attribute %r on %r: %r" % name, obj, kwargs)
+        _LOG.info("Adding attribute %r on %r: %r", name, obj, kwargs)
         cmds.addAttr(obj, **kwargs)
         attr = "%s.%s" % (obj, name)
-        cmds.setAttr(attr, value, type=type_)
+        if value:
+            cmds.setAttr(attr, value, type=type_)
 
     def on_submit(self):
         """ Called when the user pressed submit.
@@ -112,5 +117,5 @@ class FormCreateAttribute(QtWidgets.QMainWindow):
         type_ = self.get_attr_type()
         value = self.ui.lineEdit_value.text()
 
-        for obj in pymel.selected():
+        for obj in cmds.ls(selection=True):
             self.add_attribute(obj, name, type_, value)

@@ -42,6 +42,7 @@ class CompoundDefinition(dict):
         super(CompoundDefinition, self).__init__(*args, **kwargs)
 
         self["uid"] = self.get("uid", None) or str(uuid.uuid4())
+        self["name"] = self.get("name") or "unamed"
         self["version"] = self.get("version") or "0.0.0"
         self["description"] = self.get("description") or ""
 
@@ -58,12 +59,14 @@ class CompoundDefinition(dict):
 
     def __gt__(self, other):
         return self.name > other.name or (
-            self.name == other.name and version.parse(self.version) > version.parse(other.version)
+            self.name == other.name
+            and version.parse(self.version) > version.parse(other.version)
         )
 
     def __lt__(self, other):
         return self.name < other.name or (
-            self.name == other.name and version.parse(self.version) < version.parse(other.version)
+            self.name == other.name
+            and version.parse(self.version) < version.parse(other.version)
         )
 
     def __ge__(self, other):

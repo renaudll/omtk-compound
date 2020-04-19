@@ -1,4 +1,5 @@
 """Test cases for the Registry class."""
+# pylint: disable=redefined-outer-name
 import pytest
 
 from omtk_compound.core._definition import CompoundDefinition
@@ -11,7 +12,7 @@ from omtk_compound.core._registry import (
 
 
 @pytest.fixture
-def registry():
+def registry_empty():
     """Fixture for an empty registry object"""
     return Registry()
 
@@ -28,15 +29,17 @@ def entry1_v2():
     return CompoundDefinition(name="testComponent", version="2.0.0", uid=1)
 
 
+@pytest.fixture
+def registry(entry1_v1, entry1_v2):
+    """Fixture for a non-empty registry."""
+    registry = Registry()
+    registry.register(entry1_v1, entry1_v2)
+    return registry
+
+
 def test_iter(registry):
-    """Validate iterating through an empty registry"""
-    assert tuple(registry) == ()
-
-
-def test_register(registry, entry1_v1):
-    """Validate we can register a entry"""
-    registry.register(entry1_v1)
-    assert tuple(registry) == ((1, "1.0.0"),)
+    """Validate iterating through an non-empty registry"""
+    assert sorted(registry) == [(1, "1.0.0"), (1, "2.0.0")]
 
 
 def test_register_invalid(registry):
@@ -48,52 +51,63 @@ def test_register_invalid(registry):
 
 def test_register_twice(registry, entry1_v1):
     """Validate an exception is raised if we try to register an entry twice."""
-    registry.register(entry1_v1)
     with pytest.raises(AlreadyRegisteredError) as error:
         registry.register(entry1_v1)
     assert str(error.value) == "%s is already registered" % entry1_v1
 
 
-def test_register_multiple(registry, entry1_v1, entry1_v2):
-    """Validate we can register two entities"""
-    registry.register(entry1_v1, entry1_v2)
-    assert tuple(registry) == ((1, "1.0.0"), (1, "2.0.0"))
-
-
-def test_unregister(registry, entry1_v1, entry1_v2):
+def test_unregister(registry, entry1_v1):
     """Validate we can unregister an entry"""
-    registry.register(entry1_v1, entry1_v2)
     registry.unregister(entry1_v1)
-    assert tuple(registry) == ((1, "2.0.0"),)
+    assert sorted(registry) == [(1, "2.0.0")]
 
 
-def test_unregister_invalid(registry, entry1_v1):
+def test_unregister_invalid(registry_empty, entry1_v1):
     """Validate an exception is raised when trying to unregister an invalid entry"""
     with pytest.raises(NotRegisteredError) as error:
-        registry.unregister(entry1_v1)
+        registry_empty.unregister(entry1_v1)
     assert str(error.value) == "%s is not registered" % entry1_v1
 
 
-def test_get_versions(registry, entry1_v1, entry1_v2):
+def test_get_versions(registry, entry1_v1):
     """Validate we can access a version stream from a uid"""
-    registry.register(entry1_v1, entry1_v2)
-    assert type(registry[entry1_v1.uid]) == VersionStream
+    assert isinstance(registry[entry1_v1.uid], VersionStream)
 
 
 def test_get_version(registry, entry1_v1, entry1_v2):
     """Validate we can access a version stream from it's version"""
-    registry.register(entry1_v1, entry1_v2)
     assert registry[entry1_v1.uid][entry1_v2.version] is entry1_v2
 
 
 def test_get_version_latest(registry, entry1_v1, entry1_v2):
-    """Validate  we can access the latest version of a stream."""
-    registry.register(entry1_v1, entry1_v2)
+    """Validate we can access the latest version of a stream."""
     assert registry[entry1_v1.uid].latest is entry1_v2
 
 
-# def test_get_latest(registry, entry1_v1, entry1_v2):
-#     """Validate we can correctly query the latest version"""
-#     registry.register(entry1_v1)
-#     registry.register(entry1_v2)
-#     assert registry.get_latest(entry1_v1) == entry1_v2
+def test_find_by_uid(registry, entry1_v2):
+    """Validate we can find an entry by it's uid."""
+    assert registry.find(uid=1) is entry1_v2
+
+
+def test_find_by_name(registry, entry1_v2):
+    """Validate we can find an entry by it's name."""
+    assert registry.find(name="testComponent") is entry1_v2
+
+
+def test_find_by_name_and_version(registry, entry1_v1):
+    """Validate we can find an entry by it's name and version."""
+    assert registry.find(name="testComponent", version="1.0.0") == entry1_v1
+
+
+def test_find_fail_no_match(registry):
+    """Validate we raise if Registry.find find no match."""
+    with pytest.raises(LookupError) as error:
+        registry.find(name="an_unregistered_name")
+    assert str(error.value) == "Found no compound matching requirements."
+
+
+def test_find_fail_no_query(registry):
+    """Validate we raise if Registry.find is called without any query."""
+    with pytest.raises(ValueError) as error:
+        registry.find(version=1)  # a version is not enough
+    assert str(error.value) == "Should at least have one query."

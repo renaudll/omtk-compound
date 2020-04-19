@@ -9,7 +9,13 @@ from omtk_compound.core import (
     Registry,
 )
 
-__all__ = ("Compound", "CompoundDefinition", "CompoundValidationError", "Registry", "manager")
+__all__ = (
+    "Compound",
+    "CompoundDefinition",
+    "CompoundValidationError",
+    "Registry",
+    "manager",
+)
 
 # Default manager
 manager = Manager()  # pylint: disable=invalid-name

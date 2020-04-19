@@ -9,6 +9,7 @@
 
 from omtk_compound.vendor.Qt import QtCompat, QtCore, QtGui, QtWidgets
 
+
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -23,10 +24,14 @@ class Ui_MainWindow(object):
         self.label.setObjectName("label")
         self.verticalLayout.addWidget(self.label)
         self.widget_outliner = CompoundOutlinerWidget(self.centralwidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.widget_outliner.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.widget_outliner.sizePolicy().hasHeightForWidth()
+        )
         self.widget_outliner.setSizePolicy(sizePolicy)
         self.widget_outliner.setObjectName("widget_outliner")
         self.verticalLayout.addWidget(self.widget_outliner)
@@ -42,10 +47,14 @@ class Ui_MainWindow(object):
         self.horizontalLayout = QtWidgets.QHBoxLayout(self.groupBox)
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.widget_editor = CompoundEditorWidget(self.groupBox)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.widget_editor.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.widget_editor.sizePolicy().hasHeightForWidth()
+        )
         self.widget_editor.setSizePolicy(sizePolicy)
         self.widget_editor.setObjectName("widget_editor")
         self.horizontalLayout.addWidget(self.widget_editor)
@@ -63,11 +72,14 @@ class Ui_MainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QtCompat.translate("MainWindow", "MainWindow", None, -1))
+        MainWindow.setWindowTitle(
+            QtCompat.translate("MainWindow", "MainWindow", None, -1)
+        )
         self.label.setText(QtCompat.translate("MainWindow", "Outliner", None, -1))
         self.pushButton.setText(QtCompat.translate("MainWindow", "Create", None, -1))
         self.pushButton_2.setText(QtCompat.translate("MainWindow", "Publish", None, -1))
         self.groupBox.setTitle(QtCompat.translate("MainWindow", "Editor", None, -1))
+
 
 from ..widget_compound_outliner import CompoundOutlinerWidget
 from ..widget_compound_editor import CompoundEditorWidget

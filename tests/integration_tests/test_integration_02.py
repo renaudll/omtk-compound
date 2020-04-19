@@ -1,3 +1,6 @@
+"""
+High level integration tests
+"""
 from omtk_compound.core import create_from_nodes
 
 

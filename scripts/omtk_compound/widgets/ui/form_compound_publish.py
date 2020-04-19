@@ -9,6 +9,7 @@
 
 from omtk_compound.vendor.Qt import QtCore, QtGui, QtWidgets
 
+
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -47,8 +48,12 @@ class Ui_MainWindow(object):
         self.label_publish_message = QtWidgets.QLabel(self.centralwidget)
         self.label_publish_message.setObjectName("label_publish_message")
         self.verticalLayout.addWidget(self.label_publish_message)
-        self.plainTextEdit_publish_message = QtWidgets.QPlainTextEdit(self.centralwidget)
-        self.plainTextEdit_publish_message.setObjectName("plainTextEdit_publish_message")
+        self.plainTextEdit_publish_message = QtWidgets.QPlainTextEdit(
+            self.centralwidget
+        )
+        self.plainTextEdit_publish_message.setObjectName(
+            "plainTextEdit_publish_message"
+        )
         self.verticalLayout.addWidget(self.plainTextEdit_publish_message)
         self.pushButton_submit = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton_submit.setObjectName("pushButton_submit")
@@ -66,11 +71,24 @@ class Ui_MainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QtWidgets.QApplication.translate("MainWindow", "Publish Compound", None, -1))
-        self.label_author.setText(QtWidgets.QApplication.translate("MainWindow", "Author", None, -1))
-        self.label_name.setText(QtWidgets.QApplication.translate("MainWindow", "Name", None, -1))
-        self.label_version.setText(QtWidgets.QApplication.translate("MainWindow", "Version", None, -1))
-        self.label_uid.setText(QtWidgets.QApplication.translate("MainWindow", "UID", None, -1))
-        self.label_publish_message.setText(QtWidgets.QApplication.translate("MainWindow", "Publish message:", None, -1))
-        self.pushButton_submit.setText(QtWidgets.QApplication.translate("MainWindow", "Submit", None, -1))
-
+        MainWindow.setWindowTitle(
+            QtWidgets.QApplication.translate("MainWindow", "Publish Compound", None, -1)
+        )
+        self.label_author.setText(
+            QtWidgets.QApplication.translate("MainWindow", "Author", None, -1)
+        )
+        self.label_name.setText(
+            QtWidgets.QApplication.translate("MainWindow", "Name", None, -1)
+        )
+        self.label_version.setText(
+            QtWidgets.QApplication.translate("MainWindow", "Version", None, -1)
+        )
+        self.label_uid.setText(
+            QtWidgets.QApplication.translate("MainWindow", "UID", None, -1)
+        )
+        self.label_publish_message.setText(
+            QtWidgets.QApplication.translate("MainWindow", "Publish message:", None, -1)
+        )
+        self.pushButton_submit.setText(
+            QtWidgets.QApplication.translate("MainWindow", "Submit", None, -1)
+        )

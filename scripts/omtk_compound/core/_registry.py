@@ -46,7 +46,7 @@ class Registry(object):
     def __init__(self):
         self._store = defaultdict(VersionStream)
 
-    def __iter__(self):
+    def __iter__(self):  # TODO: Should return VersionStream
         for uid, versions in six.iteritems(self._store):
             for version in versions:
                 yield uid, version
@@ -60,6 +60,30 @@ class Registry(object):
     def __eq__(self, other):
         # TODO: Refactor, should not use private symbol
         return tuple(self) == tuple(other)
+
+    def find(self, uid=None, name=None, version=None):
+        """
+        Find a single compound definition.
+
+        :param str uid: Optional compound uid to search for.
+        :param str name: Optional compound name to search for.
+        :param int version: Optional compound version to search for. Default is latest.
+        :return: A Compound definition
+        :rtype: CompoundDefinition
+        :raises ValueError: If the requirements are invalid.
+        :raises LookupError: If no compound definition is found.
+        """
+        if not any((name, uid)):
+            raise ValueError("Should at least have one query.")
+
+        for stream in self._store.values():
+            compound = stream.get(version) if version else stream.latest
+            if compound and (
+                (uid and compound.uid == uid) or (name and compound.name == name)
+            ):
+                return compound
+
+        raise LookupError("Found no compound matching requirements.")
 
     def register(self, *entries):
         """

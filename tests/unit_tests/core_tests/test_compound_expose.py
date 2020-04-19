@@ -1,7 +1,9 @@
 """
-Test cases for exposing an attribute.
+Test for exposing an attribute.
 """
+# pylint: disable=redefined-outer-name
 import pytest
+
 from omtk_compound.core._utils_attr import expose_attribute
 from omtk_compound import Compound
 
@@ -16,7 +18,8 @@ def scene(cmds):
 
 
 @pytest.fixture
-def compound(scene):
+def compound(scene):  # pylint: disable=unused-argument
+    """Fixture for a compound instance"""
     return Compound("test")
 
 
@@ -59,18 +62,18 @@ def test_expose_multiple_compound_attr_with_same_name(cmds):
     expose_attribute(src1, dst, "translate")
     expose_attribute(src2, dst, "translate")
 
-    for longName, shortName in (
-            ("translate", "t"),
-            ("translateX", "tx"),
-            ("translateY", "ty"),
-            ("translateZ", "tz"),
-            ("translate1", "t1"),
-            ("translate1X", "t1x"),
-            ("translate1Y", "t1y"),
-            ("translate1Z", "t1z"),
+    for long_name, short_name in (
+        ("translate", "t"),
+        ("translateX", "tx"),
+        ("translateY", "ty"),
+        ("translateZ", "tz"),
+        ("translate1", "t1"),
+        ("translate1X", "t1x"),
+        ("translate1Y", "t1y"),
+        ("translate1Z", "t1z"),
     ):
-        assert cmds.objExists("dst.%s" % longName)
-        assert cmds.attributeQuery(shortName, node="dst", shortName=True) == shortName
+        assert cmds.objExists("dst.%s" % long_name)
+        assert cmds.attributeQuery(short_name, node="dst", shortName=True) == short_name
 
 
 def test_expose_input_attr(cmds, compound):
@@ -129,7 +132,9 @@ def test_expose_output_attr_non_readable(cmds, compound):
 
 
 def test_expose_output_attr_non_writable(cmds, compound):
-    """Validate that when we expose an un-writable output attribute it become writable."""
+    """
+    Validate that when we expose an un-writable output attribute it become writable.
+    """
     cmds.addAttr("test:foobar", longName="testAttr", writable=False)
     compound.expose_output_attr("test:foobar.testAttr")
 
@@ -137,7 +142,8 @@ def test_expose_output_attr_non_writable(cmds, compound):
     assert cmds.attributeQuery("testAttr", node="test:outputs", writable=True)
 
 
-def test_generate_docstring(cmds, compound):
+def test_generate_docstring(compound):
+    """Validate we can generate a compound description."""
     actual = compound.generate_docstring()
     expected = "Inputs:\nOutputs:\n"
     assert actual == expected

@@ -1,3 +1,7 @@
+"""
+Tests for omtk_compound.core._definition
+"""
+# pylint: disable=redefined-outer-name
 import pytest
 
 from omtk_compound.core._definition import CompoundDefinition
@@ -5,35 +9,34 @@ from omtk_compound.core._definition import CompoundDefinition
 
 @pytest.fixture
 def compdef():
+    """Fixture for a preconfigured compound definition"""
     return CompoundDefinition(name="test_name")
 
 
 def test_get_uid():
     """Validate creating two compounds will have difference uids."""
-    c1 = CompoundDefinition(name="compound_a")
-    c2 = CompoundDefinition(name="compound_b")
-    assert c1.uid != c2.uid
+    compound_def_1 = CompoundDefinition(name="compound_a")
+    compound_def_2 = CompoundDefinition(name="compound_b")
+    assert compound_def_1.uid != compound_def_2.uid
 
 
 def test_basic(compdef):
     """Validate CompoundDefinition act like a dict."""
-    c = compdef
-
     # __getitem__
     with pytest.raises(KeyError):
-        _ = c["foo"]
+        _ = compdef["foo"]
 
     # __setitem__
-    c["foo"] = "bar"
+    compdef["foo"] = "bar"
 
     # __getitem__
-    assert c["foo"] == "bar"
+    assert compdef["foo"] == "bar"
 
     # __delitem__
-    del c["foo"]
+    del compdef["foo"]
 
     # __getitem__
-    assert "foo" not in c
+    assert "foo" not in compdef
 
 
 def test_ordering():
@@ -45,27 +48,27 @@ def test_ordering():
 
     # Equality
     assert inst1 == inst1_same
-    assert not inst1 != inst1_same
-    assert not inst1 > inst1_same
+    assert not inst1 != inst1_same  # pylint: disable=unneeded-not
+    assert not inst1 > inst1_same  # pylint: disable=unneeded-not
     assert inst1 >= inst1_same
-    assert not inst1 < inst1_same
+    assert not inst1 < inst1_same  # pylint: disable=unneeded-not
     assert inst1 <= inst1_same
 
     # Greater name
-    assert not inst3 == inst1
+    assert not inst3 == inst1  # pylint: disable=unneeded-not
     assert inst3 != inst1
     assert inst3 > inst1
     assert inst3 >= inst1
-    assert not inst3 < inst1
-    assert not inst3 <= inst1
+    assert not inst3 < inst1  # pylint: disable=unneeded-not
+    assert not inst3 <= inst1  # pylint: disable=unneeded-not
 
     # Same name, greater version
-    assert not inst2 == inst1
+    assert not inst2 == inst1  # pylint: disable=unneeded-not
     assert inst2 != inst1
     assert inst2 > inst1
     assert inst2 >= inst1
-    assert not inst2 < inst1
-    assert not inst2 <= inst1
+    assert not inst2 < inst1  # pylint: disable=unneeded-not
+    assert not inst2 <= inst1  # pylint: disable=unneeded-not
 
     # Sorting
     actual = sorted((inst1, inst2, inst3))
@@ -87,14 +90,6 @@ def test_properties():
     assert inst.author == "test_author"
     assert inst.version == "test_version"
     assert inst.path == "some_path"
-
-
-def test_missing_field():
-    """Validate we raise an error if we fail to provide all mandatory fields."""
-    with pytest.raises(ValueError) as error:
-        CompoundDefinition()
-
-    assert str(error.value) == "Missing mandatory fields: 'name'"
 
 
 def test_from_file(cmds, tmp_path, compdef):

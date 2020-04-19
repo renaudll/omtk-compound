@@ -1,10 +1,14 @@
+"""
+Tests for omtk_compound.core._utils_attr
+"""
 from maya import cmds
 
 from omtk_compound.core._utils_attr import expose_attribute, reorder_attributes
 
 
 def test_transfer_attribute_single_scalar():
-    """ Validate we can transfer a simple scalar attribute.
+    """
+    Validate we can transfer a simple scalar attribute.
     """
     src = cmds.createNode("transform", name="src")
     dst = cmds.createNode("transform", name="dst")
@@ -17,7 +21,9 @@ def test_transfer_attribute_single_scalar():
 
 
 def test_transform_attribute_child_scalar_to_single_scalar():
-    """ Validate we can transfer an attribute child of another attribute to a single isolated attribute.
+    """
+    Validate we can transfer an attribute child of another attribute
+    to a single isolated attribute.
     """
     src = cmds.createNode("transform", name="src")
     dst = cmds.createNode("transform", name="dst")
@@ -31,7 +37,8 @@ def test_transform_attribute_child_scalar_to_single_scalar():
 
 
 def test_reorder_attributes():
-    """ Validate we can re-order attributes.
+    """
+    Validate we can re-order attributes.
     """
     node = cmds.createNode("transform", name="testNode")
     cmds.addAttr(node, longName="testAttrA")

@@ -53,7 +53,7 @@ def relative_namespace(namespace, parent_namespace):
     parent_namespace = parent_namespace or ""  # temporary
     prefix = parent_namespace.rstrip(":") + ":"
     if namespace.startswith(prefix):
-        return namespace[len(prefix):]
+        return namespace[len(prefix) :]
     return namespace
 
 
@@ -103,7 +103,7 @@ def get_namespace(value):
         # type: (object) -> str
         try:
             return value_.namespace()
-        except Exception:
+        except Exception:  # pylint: disable=broad-except
             pass
 
         try:

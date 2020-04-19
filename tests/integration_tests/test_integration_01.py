@@ -1,6 +1,7 @@
 """
 High level integration tests
 """
+# pylint: disable=redefined-outer-name
 import pymel.core as pymel
 import pytest
 from maya import cmds
@@ -16,16 +17,19 @@ from omtk_compound.core import (
 
 @pytest.fixture
 def registry():
+    """Fixture for a preconfigured registry"""
     return Registry()
 
 
 @pytest.fixture
 def preferences(tmpdir):
+    """Fixture for a preconfigured preference"""
     return Preferences(compound_location=str(tmpdir))
 
 
 @pytest.fixture
 def manager(registry, preferences):
+    """Fixture for a preconfigured manager"""
     return Manager(registry=registry, preferences=preferences)
 
 
@@ -88,8 +92,8 @@ def test_integration_1(manager):
 
     # Create a compound from the network
     compound = create_from_nodes([mult1], namespace="foo")
-    a = mult1.input1X
-    compound.expose_input_attr(a)
+    attr = mult1.input1X
+    compound.expose_input_attr(attr)
     compound.expose_output_attr(mult1.outputX)
 
     # Create connections from outside the compound

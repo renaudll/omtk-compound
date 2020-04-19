@@ -1,5 +1,8 @@
-"""Test cases for _namespace library."""
+"""
+Tests for omtk_compound.core._utils_namespace
+"""
 import pytest
+
 from omtk_compound.core._utils_namespace import (
     get_unique_namespace,
     get_common_namespace,
@@ -50,6 +53,7 @@ def test_get_unique_namespace_clash_with_suffix(cmds):
     ),
 )
 def test_join_namespace(namespaces, expected):
+    """Ensure we can join two namespaces."""
     assert join_namespace(*namespaces) == expected
 
 
@@ -69,6 +73,7 @@ def test_join_namespace(namespaces, expected):
     ),
 )
 def test_get_common_namespace_no_namespaces(nodes, expected):
+    """Ensure we can get the common namespace between two namespaces."""
     assert get_common_namespace(nodes) == expected
 
 
@@ -82,4 +87,5 @@ def test_get_common_namespace_no_namespaces(nodes, expected):
     ),
 )
 def test_get_relative_namespace(namespace, parent_namespace, expected):
+    """Ensure we can extract a relative namespace."""
     assert relative_namespace(namespace, parent_namespace) == expected

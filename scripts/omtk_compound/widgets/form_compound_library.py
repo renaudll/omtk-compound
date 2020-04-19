@@ -1,7 +1,6 @@
 """
 Window that show the available registered compounds.
 """
-import omtk_compound
 from omtk_compound.vendor.Qt import QtWidgets
 from omtk_compound.core._factory import from_file
 from omtk_compound import manager
@@ -14,6 +13,7 @@ class FormCompoundLibrary(QtWidgets.QMainWindow):
     """
     Window that show the available registered compounds.
     """
+
     def __init__(self):
         super(FormCompoundLibrary, self).__init__()
 
@@ -27,16 +27,16 @@ class FormCompoundLibrary(QtWidgets.QMainWindow):
             self.on_selection_changed
         )
         self.ui.pushButton_create.pressed.connect(self.on_submit)
-        self.ui.lineEdit_create_namespace.textChanged.connect(self.on_namespace_changed)
+        self.ui.lineEdit_create_namespace.textChanged.connect(self.update_enabled)
 
         self.update_enabled()
 
-    def update_enabled(self):
+    def update_enabled(self, *_):
+        """
+        Update the status of the "create" button.
+        """
         text = self.ui.lineEdit_create_namespace.text()
         self.ui.pushButton_create.setEnabled(bool(text))
-
-    def on_namespace_changed(self, text):
-        self.update_enabled()
 
     def on_submit(self):
         """
@@ -46,11 +46,11 @@ class FormCompoundLibrary(QtWidgets.QMainWindow):
         name = self.ui.lineEdit_create_namespace.text()
         from_file(sel.path, namespace=name)
 
-    def on_selection_changed(self, selected, deselected):
+    def on_selection_changed(self, selected, _):
         """
         Called when the user select a component
         :param selected: Selected items
-        :param deselected: Unselected items
+        :type selected: QtCore.QItemSelection
         """
         if selected.empty():
             return

@@ -9,6 +9,7 @@
 
 from omtk_compound.vendor.Qt import QtCompat, QtCore, QtGui, QtWidgets
 
+
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -25,7 +26,9 @@ class Ui_MainWindow(object):
         self.lineEdit_compounds_search.setObjectName("lineEdit_compounds_search")
         self.verticalLayout.addWidget(self.lineEdit_compounds_search)
         self.tableView_compounds = QtWidgets.QTableView(self.centralwidget)
-        self.tableView_compounds.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.tableView_compounds.setSelectionBehavior(
+            QtWidgets.QAbstractItemView.SelectRows
+        )
         self.tableView_compounds.setObjectName("tableView_compounds")
         self.verticalLayout.addWidget(self.tableView_compounds)
         self.horizontalLayout.addLayout(self.verticalLayout)
@@ -62,8 +65,15 @@ class Ui_MainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QtCompat.translate("MainWindow", "Compound Library", None, -1))
-        self.label_description.setText(QtCompat.translate("MainWindow", "Description", None, -1))
-        self.pushButton_create.setText(QtCompat.translate("MainWindow", "Create", None, -1))
-        self.lineEdit_create_namespace.setText(QtCompat.translate("MainWindow", "compound", None, -1))
-
+        MainWindow.setWindowTitle(
+            QtCompat.translate("MainWindow", "Compound Library", None, -1)
+        )
+        self.label_description.setText(
+            QtCompat.translate("MainWindow", "Description", None, -1)
+        )
+        self.pushButton_create.setText(
+            QtCompat.translate("MainWindow", "Create", None, -1)
+        )
+        self.lineEdit_create_namespace.setText(
+            QtCompat.translate("MainWindow", "compound", None, -1)
+        )

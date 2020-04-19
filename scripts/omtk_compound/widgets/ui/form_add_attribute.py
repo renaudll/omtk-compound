@@ -9,6 +9,7 @@
 
 from omtk_compound.vendor.Qt import QtCore, QtGui, QtWidgets
 
+
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -56,7 +57,9 @@ class Ui_MainWindow(object):
         self.lineEdit_value.setObjectName("lineEdit_value")
         self.gridLayout_2.addWidget(self.lineEdit_value, 2, 1, 1, 1)
         self.verticalLayout.addLayout(self.gridLayout_2)
-        spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        spacerItem = QtWidgets.QSpacerItem(
+            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding
+        )
         self.verticalLayout.addItem(spacerItem)
         self.pushButton = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton.setObjectName("pushButton")
@@ -74,15 +77,36 @@ class Ui_MainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QtWidgets.QApplication.translate("MainWindow", "Add Attribute", None, -1))
-        self.label_name.setText(QtWidgets.QApplication.translate("MainWindow", "Name", None, -1))
-        self.rb_message.setText(QtWidgets.QApplication.translate("MainWindow", "Message", None, -1))
-        self.rb_float.setText(QtWidgets.QApplication.translate("MainWindow", "Float", None, -1))
-        self.rb_integer.setText(QtWidgets.QApplication.translate("MainWindow", "Integer", None, -1))
-        self.rb_string.setText(QtWidgets.QApplication.translate("MainWindow", "String", None, -1))
-        self.rb_matrix.setText(QtWidgets.QApplication.translate("MainWindow", "Matrix", None, -1))
-        self.rb_boolean.setText(QtWidgets.QApplication.translate("MainWindow", "Boolean", None, -1))
-        self.label_3.setText(QtWidgets.QApplication.translate("MainWindow", "Type", None, -1))
-        self.label_value.setText(QtWidgets.QApplication.translate("MainWindow", "Value", None, -1))
-        self.pushButton.setText(QtWidgets.QApplication.translate("MainWindow", "Create", None, -1))
-
+        MainWindow.setWindowTitle(
+            QtWidgets.QApplication.translate("MainWindow", "Add Attribute", None, -1)
+        )
+        self.label_name.setText(
+            QtWidgets.QApplication.translate("MainWindow", "Name", None, -1)
+        )
+        self.rb_message.setText(
+            QtWidgets.QApplication.translate("MainWindow", "Message", None, -1)
+        )
+        self.rb_float.setText(
+            QtWidgets.QApplication.translate("MainWindow", "Float", None, -1)
+        )
+        self.rb_integer.setText(
+            QtWidgets.QApplication.translate("MainWindow", "Integer", None, -1)
+        )
+        self.rb_string.setText(
+            QtWidgets.QApplication.translate("MainWindow", "String", None, -1)
+        )
+        self.rb_matrix.setText(
+            QtWidgets.QApplication.translate("MainWindow", "Matrix", None, -1)
+        )
+        self.rb_boolean.setText(
+            QtWidgets.QApplication.translate("MainWindow", "Boolean", None, -1)
+        )
+        self.label_3.setText(
+            QtWidgets.QApplication.translate("MainWindow", "Type", None, -1)
+        )
+        self.label_value.setText(
+            QtWidgets.QApplication.translate("MainWindow", "Value", None, -1)
+        )
+        self.pushButton.setText(
+            QtWidgets.QApplication.translate("MainWindow", "Create", None, -1)
+        )

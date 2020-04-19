@@ -1,6 +1,8 @@
 """
-A Compound represent encapsulation in Maya via a namespace and an input and output attribute holder networks.
+A Compound represent encapsulation in Maya
+via a namespace and an input and output attribute holder networks.
 """
+import ast
 import logging
 import six
 
@@ -11,7 +13,7 @@ from omtk_compound.core._constants import INPUT_NODE_NAME, OUTPUT_NODE_NAME
 from omtk_compound.core._parser import remove_root_namespace, write_metadata_to_ma_file
 from omtk_compound.core import _utils_attr, _utils_namespace
 
-log = logging.getLogger(__name__)
+_LOG = logging.getLogger(__name__)
 
 
 class CompoundError(Exception):
@@ -22,7 +24,7 @@ class CompoundValidationError(CompoundError):
     """Exception raised when a compound object is invalid"""
 
 
-class Compound(object):
+class Compound(object):  # pylint: disable=too-many-public-methods
     """ An instance of a network of Maya nodes that represent encapsulation.
     It share a common namespace and have an input and output networks.
     """
@@ -30,7 +32,7 @@ class Compound(object):
     def __init__(self, namespace):
         """
         :param str namespace: A namespace
-        :raises CompoundValidationError: If the namespace don't contain a valid compound.
+        :raises CompoundValidationError: If the namespace don't contain a valid compound
         """
         self._inputs = {}
         self._outputs = {}
@@ -57,7 +59,6 @@ class Compound(object):
 
     def __melobject__(self):
         """ The dagpath of a compound is it's namespace.
-        As no dg node name can conflict with a namespace this is a safe identifier to use.
 
         :return: The compound namespace, ex: `namespace`
         :rtype: str
@@ -114,7 +115,9 @@ class Compound(object):
         :raises CompoundValidationError: If the compound don't validate.
         """
         if self.namespace in ("UI",):
-            raise CompoundValidationError("Namespace %s is blacklisted." % (self.namespace))
+            raise CompoundValidationError(
+                "Namespace %s is blacklisted." % (self.namespace)
+            )
         if not cmds.objExists(self.input):
             raise CompoundValidationError("%r don't exist." % self.input)
         if not cmds.objExists(self.output):
@@ -139,9 +142,7 @@ class Compound(object):
         metadata = {}
         for line in lines:
             key, val = line.split(":", 1)
-            metadata[key] = eval(
-                val
-            )  # TODO: There's something better than eval for this
+            metadata[key] = ast.literal_eval(val)
         return metadata
 
     def set_metadata(self, metadata):
@@ -164,7 +165,9 @@ class Compound(object):
 
         lines = []
         for key, val in metadata.items():
-            val = str(val) if isinstance(val, six.string_types) else val  # convert unicode to native string
+            val = (
+                str(val) if isinstance(val, six.string_types) else val
+            )  # convert unicode to native string
             lines.append("%s:%r" % (key, val))
         metadata_str = "\n".join(lines)
 
@@ -221,12 +224,13 @@ class Compound(object):
     def optimize(self):
         """
         Implement optimisation routines. Call before publishing rig to animation.
+
         There's multiple things that can be done here, here's some idea:
         - Remove the inn and out hub.
-        - Check if decomposeMatrix are sent to composeMatrix and vice versa and remove them.
+        - Remove decomposeMatrix connected to composeMatrix
+        - Remove composeMatrix connected to decomposeMatrix
 
-        :return:
-        :rtype: bool
+        :raises NotImplementedError: Always
         """
         self.explode()
 
@@ -275,7 +279,7 @@ class Compound(object):
 
         :param str dagpath: The attribute to expose
         :return: The dagpath of the exposed attribute
-        :raises: ValueError: If the attribute is the destination of an existing connection.
+        :raises: ValueError: If the attribute is already a connection destination
         """
         # TODO: Remove pymel usage
         attr = pymel.Attribute(dagpath)
@@ -283,17 +287,24 @@ class Compound(object):
 
         # TODO: Solidify array element support with appropriate tests
         attr = attr.array() if attr.isElement() else attr
-        if not cmds.attributeQuery(attr.longName(), node=str(attr.node()), writable=True):
-            raise ValueError("Cannot expose un-writable attribute %r as an input." % dagpath)
+        if not cmds.attributeQuery(
+            attr.longName(), node=str(attr.node()), writable=True
+        ):
+            raise ValueError(
+                "Cannot expose un-writable attribute %r as an input." % dagpath
+            )
 
         if cmds.connectionInfo(dagpath, isDestination=True):
             raise ValueError("Cannot expose a destination attribute: %r" % dagpath)
 
         # TODO: Manage name collision
         src_node = str(attr.node())
-        src_dagpath = _utils_attr.expose_attribute(src_node, self.input, attr.longName())
+        src_dagpath = _utils_attr.expose_attribute(
+            src_node, self.input, attr.longName()
+        )
 
-        # Our reference attribute might not be "readable" (a possible connection destination).
+        # Our reference attribute might not be "readable"
+        # (a possible connection destination).
         # TODO: Don't use pymel?
         mattr = pymel.Attribute(src_dagpath).__apimattr__()
         mattr.setReadable(True)
@@ -316,8 +327,12 @@ class Compound(object):
 
         # TODO: Solidify array element support with appropriate tests
         attr_to_check = attr.array() if attr.isElement() else attr
-        if not cmds.attributeQuery(attr_to_check.longName(), node=str(attr.node()), readable=True):
-            raise ValueError("Cannot expose un-readable attribute %r as an output." % dagpath)
+        if not cmds.attributeQuery(
+            attr_to_check.longName(), node=str(attr.node()), readable=True
+        ):
+            raise ValueError(
+                "Cannot expose un-readable attribute %r as an output." % dagpath
+            )
 
         if cmds.connectionInfo(dagpath, isSource=True):
             raise ValueError("Cannot expose a source attribute: %r" % dagpath)
@@ -327,7 +342,8 @@ class Compound(object):
         attr_name = str(attr.longName())
         dst_dagpath = _utils_attr.expose_attribute(src_node, self.output, attr_name)
 
-        # Our reference attribute might not be "writable" (a possible connection source).
+        # Our reference attribute might not be "writable"
+        # (a possible connection source)
         mattr = pymel.Attribute(dst_dagpath).__apimattr__()
         mattr.setWritable(True)
 
@@ -336,9 +352,11 @@ class Compound(object):
         return dst_dagpath
 
     def explode(self, remove_namespace=False):
-        """ Delete the compound and it's hub, remapping the attribute to their original location.
+        """
+        Delete the compound and it's hub,
+        remapping the attribute to their original location.
 
-        :param bool remove_namespace: If True the compound namespace will be also removed.
+        :param bool remove_namespace: Should we remove the compound namespace?
         """
 
         def _remap_attr(attr_):
@@ -391,6 +409,12 @@ class Compound(object):
         return map_inn, map_out
 
     def hold_connections(self):
+        """
+        Disconnect the compound input and output connections.
+
+        :return: The disconnected inputs and outputs connections.
+        :rtype: tuple(dict, dict)
+        """
         # TODO: Remove pymel usage
         map_inn, map_out = self.get_connections()
 
@@ -406,6 +430,14 @@ class Compound(object):
 
     @staticmethod
     def fetch_connections(map_inn, map_out):
+        """
+        Reconnect the compound input and output connections.
+
+        :param map_inn: Input connection to create
+        :type map_inn: dict[str, str]
+        :param map_out: Output connections to create
+        :type map_out: dict[str, str]
+        """
         for attr_dst, attr_srcs in map_inn.iteritems():
             for attr_src in attr_srcs:
                 cmds.connectAttr(attr_src, attr_dst)
@@ -414,23 +446,32 @@ class Compound(object):
             for attr_dst in attr_dsts:
                 cmds.connectAttr(attr_src, attr_dst)
 
-    def rename(self, new_namespace):
-        # TODO: Rename sub compounds?
-        from maya import cmds
+    def rename(self, namespace):
+        """
+        Change the compound namespace.
 
+        :param str namespace: The new namespace to use
+        """
+        # TODO: Rename sub compounds?
         old_namespace = self.namespace
-        new_namespace = _utils_namespace.get_unique_namespace(new_namespace)
+        new_namespace = _utils_namespace.get_unique_namespace(namespace)
         cmds.namespace(addNamespace=new_namespace)
         cmds.namespace(moveNamespace=(self.namespace, new_namespace))
         cmds.namespace(removeNamespace=old_namespace)
         self.namespace = new_namespace
 
     def generate_docstring(self):
+        """
+        Generate a description from the compound interface.
+
+        :return: A description
+        :rtype: str
+        """
         result = ""
         result += "Inputs:\n"
         for input_ in self.inputs:
-            result += " -%s\n" % input_.split('.')[-1]
+            result += " -%s\n" % input_.split(".")[-1]
         result += "Outputs:\n"
         for output in self.outputs:
-            result += " -%s\n" % output.split('.')[-1]
+            result += " -%s\n" % output.split(".")[-1]
         return result

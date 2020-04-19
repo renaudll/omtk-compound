@@ -7,7 +7,9 @@ from omtk_compound.models import ModelAttributes
 from .ui import widget_attributes_editor as ui_def
 
 
-class AttributesEditorWidget(QtWidgets.QWidget):
+class AttributesEditorWidget(
+    QtWidgets.QWidget
+):  # pylint: disable=too-few-public-methods
     """
     QWidget that show a list of attributes and allow them to be renamed/reordered.
     """
@@ -49,6 +51,12 @@ class AttributesEditorWidget(QtWidgets.QWidget):
         self.ui.lineEdit_search.textEdited.connect(self._on_search_changed)
 
     def set_data(self, data):  # type: (list[str]) -> None
+        """
+        Set model internal data
+
+        :param data: Attributes to display
+        :type data: list[str]
+        """
         self.model.set_data(data)
         self.ui.treeView.expandAll()
 

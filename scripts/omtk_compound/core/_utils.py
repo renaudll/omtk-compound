@@ -29,8 +29,9 @@ def get_unique_key(name, all_names, naming_format="{0}{1}", start=1):
     if prefix:
         start = int(prefix) + 1  # we'll try next
 
-    for i in itertools.count(start):
-        new_name = naming_format.format(name, i)
+    counter = itertools.count(start)
+    while True:
+        new_name = naming_format.format(name, next(counter))
         if new_name not in all_names:
             return new_name
 
