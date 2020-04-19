@@ -1,9 +1,9 @@
 """
 Method for reading and parsing .ma files.
 """
-import os
 import re
 import tempfile
+import shutil
 
 from omtk_compound.core._constants import FILE_METADATA_PREFIX
 
@@ -19,16 +19,14 @@ def remove_root_namespace(namespace, path):
     :param str path: A path to a file to parse.
     """
     pattern = '"%s:' % namespace.strip(":")
-    destination = tempfile.NamedTemporaryFile(suffix=".ma")
+    path_tmp = tempfile.mktemp(suffix=".ma")
     with open(path, "r") as fp_in:
-        with open(
-            destination.name, "w"
-        ) as fp_out:  # TODO: NamedTemporaryFile already have a handler
+        with open(path_tmp, "w") as fp_out:
             for line in fp_in:
                 line = line.replace(pattern, '"')
                 fp_out.write(line)
 
-    os.rename(destination.name, path)
+    shutil.move(path_tmp, path)
 
 
 def write_metadata_to_ma_file(path, metadata):
@@ -72,7 +70,7 @@ def write_metadata_to_ma_file(path, metadata):
 
                 fp_write.write(line)
 
-    os.rename(path_tmp, path)
+    shutil.move(path_tmp, path)
 
     return success
 
