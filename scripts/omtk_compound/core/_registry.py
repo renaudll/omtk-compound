@@ -4,7 +4,7 @@ Registry hold all known compound definitions.
 import os
 from collections import defaultdict
 
-import typing
+import collections
 import six
 
 from omtk_compound.core._definition import CompoundDefinition
@@ -71,7 +71,7 @@ class Registry(object):
         :raises AlreadyRegisteredError: If the provided entry is already registered
         """
         for entry in entries:
-            if not isinstance(entry, typing.Mapping):
+            if not isinstance(entry, collections.Mapping):
                 raise TypeError(
                     "Expected mapping, got %s: %s" % (type(entry).__name__, entry)
                 )
