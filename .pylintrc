@@ -6,6 +6,7 @@
 # - Added maya and Qt.py related modules to to "ignored-modules"
 # - Added "ui,fp" to "good-names"
 # - Set "max-line-length" to 88 for compatibility with black
+# - Increase "min-similarity-lines" from 4 to 8
 [MASTER]
 
 # A comma-separated list of package or module names from where C extensions may
@@ -358,7 +359,7 @@ ignore-docstrings=yes
 ignore-imports=no
 
 # Minimum lines number of a similarity.
-min-similarity-lines=4
+min-similarity-lines=8
 
 
 [LOGGING]

@@ -1,12 +1,13 @@
 """
 Model for displaying a registered component definitions in a QTableView.
 """
-from omtk_compound.core._definition import CompoundDefinition
-from omtk_compound.vendor.Qt import QtCore
-from omtk_compound.models._roles import DataRole
+from ..core._definition import CompoundDefinition
+from ..vendor.Qt import QtCore
+from ._roles import DataRole
+from ._base import BaseTableModel
 
 
-class CompoundRegistryModel(QtCore.QAbstractTableModel):
+class CompoundRegistryModel(BaseTableModel):
     """
     Model for displaying a registered component definitions in a QTableView.
     """
@@ -18,42 +19,9 @@ class CompoundRegistryModel(QtCore.QAbstractTableModel):
         """
         :param Registry registry: A compound registry
         """
-        super(CompoundRegistryModel, self).__init__()
+        entries = sorted([registry[uid][version] for uid, version in registry])
+        super(CompoundRegistryModel, self).__init__(entries)
         self.registry = registry
-        self.entries = sorted([registry[uid][version] for uid, version in registry])
-
-    def rowCount(self, _):  # pylint: disable=invalid-name
-        """
-        Re-implement QtCore.QAbstractTableModel.rowCount
-
-        :return: The number of rows
-        :rtype: int
-        """
-        return len(self.entries)
-
-    def columnCount(self, _):  # pylint: disable=invalid-name
-        """
-        Re-implement QtCore.QAbstractTableModel.columnCount
-
-        :return: The number of columns
-        :rtype: int
-        """
-        return len(self._COLUMNS)
-
-    def headerData(self, section, orientation, role):  # pylint: disable=invalid-name
-        """
-        Re-implement QtCore.QAbstractTableModel.headerData
-
-        :param int section: The header section
-        :param int orientation: The header orientation
-        :param int role: The data role
-        :return:
-        :rtype: str or None
-        """
-        if orientation == QtCore.Qt.Horizontal and role == QtCore.Qt.DisplayRole:
-            return str(self._COLUMNS[section])
-
-        return None
 
     def data(self, index, role):
         """
