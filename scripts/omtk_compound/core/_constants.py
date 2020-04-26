@@ -1,5 +1,5 @@
 """
-Contants values
+Constants values
 """
 # Name of the node holding a compound input attributes.
 INPUT_NODE_NAME = "inputs"

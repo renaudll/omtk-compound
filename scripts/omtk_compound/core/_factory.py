@@ -6,13 +6,14 @@ import logging
 import pymel.core as pymel
 from maya import cmds
 
-from omtk_compound.core._compound import Compound, CompoundValidationError
-from omtk_compound.core._constants import (
+from ._compound import Compound, CompoundValidationError
+from ._constants import (
     INPUT_NODE_NAME,
     OUTPUT_NODE_NAME,
     COMPOUND_DEFAULT_NAMESPACE,
 )
-from omtk_compound.core._utils import pairwise
+from ._utils import pairwise
+from . import _utils_namespace
 
 _LOG = logging.getLogger(__name__)
 
@@ -25,8 +26,6 @@ def create_empty(namespace=COMPOUND_DEFAULT_NAMESPACE):
     :return: A ``Compound`` instance.
     :rtype: Compound
     """
-    from omtk_compound.core import _utils_namespace
-
     namespace = _utils_namespace.get_unique_namespace(namespace)
 
     # Create namespace if necessary
@@ -57,8 +56,6 @@ def create_from_nodes(objs, namespace=COMPOUND_DEFAULT_NAMESPACE, expose=False):
     :return: A compound object
     :rtype: Compound
     """
-    from omtk_compound.core import _utils_namespace
-
     # Conform objs to pynodes
     objs = [pymel.PyNode(obj) for obj in objs]
 
@@ -169,8 +166,6 @@ def from_file(path, namespace=COMPOUND_DEFAULT_NAMESPACE):
     :return: A compound instance.
     :rtype: omtk_compound.core.Compound
     """
-    from omtk_compound.core import _utils_namespace
-
     namespace = _utils_namespace.get_unique_namespace(namespace)
     _LOG.info("Creating compound with namespace: %s", namespace)
     cmds.file(path, i=True, namespace=namespace)

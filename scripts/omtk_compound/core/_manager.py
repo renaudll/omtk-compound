@@ -4,11 +4,11 @@ Highest logical level for compound manipulation.
 import os
 import logging
 
-from omtk_compound.core._constants import COMPOUND_DEFAULT_NAMESPACE
-from omtk_compound.core._definition import CompoundDefinition
-from omtk_compound.core._factory import from_file
-from omtk_compound.core._registry import Registry
-from omtk_compound.core._preferences import Preferences
+from ._constants import COMPOUND_DEFAULT_NAMESPACE
+from ._definition import CompoundDefinition
+from ._factory import from_file
+from ._registry import Registry
+from ._preferences import Preferences
 
 _LOG = logging.getLogger(__name__)
 

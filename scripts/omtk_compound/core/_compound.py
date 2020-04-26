@@ -9,9 +9,9 @@ import six
 from maya import cmds
 import pymel.core as pymel
 
-from omtk_compound.core._constants import INPUT_NODE_NAME, OUTPUT_NODE_NAME
-from omtk_compound.core._parser import remove_root_namespace, write_metadata_to_ma_file
-from omtk_compound.core import _utils_attr, _utils_namespace
+from ._constants import INPUT_NODE_NAME, OUTPUT_NODE_NAME
+from ._parser import remove_root_namespace, write_metadata_to_ma_file
+from . import _utils_attr, _utils_namespace
 
 _LOG = logging.getLogger(__name__)
 

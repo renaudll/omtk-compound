@@ -7,7 +7,8 @@ from contextlib import contextmanager
 
 import pymel.core as pymel
 from maya import OpenMaya, cmds, mel
-from omtk_compound.core import _utils_namespace
+
+from . import _utils_namespace
 
 _LOG = logging.getLogger(__name__)
 

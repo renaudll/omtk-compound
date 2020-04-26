@@ -5,7 +5,7 @@ import re
 import tempfile
 import shutil
 
-from omtk_compound.core._constants import FILE_METADATA_PREFIX
+from ._constants import FILE_METADATA_PREFIX
 
 _REGEX_MA_HEADER = re.compile(r"^//Maya ASCII .* scene$")
 

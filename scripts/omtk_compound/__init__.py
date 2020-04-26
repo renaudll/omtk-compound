@@ -6,6 +6,7 @@ from omtk_compound.core import (
     CompoundDefinition,
     CompoundValidationError,
     Manager,
+    Preferences,
     Registry,
 )
 
@@ -13,6 +14,8 @@ __all__ = (
     "Compound",
     "CompoundDefinition",
     "CompoundValidationError",
+    "Manager",
+    "Preferences",
     "Registry",
     "manager",
 )

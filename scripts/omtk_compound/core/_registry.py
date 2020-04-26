@@ -7,7 +7,7 @@ from collections import defaultdict
 import collections
 import six
 
-from omtk_compound.core._definition import CompoundDefinition
+from ._definition import CompoundDefinition
 
 
 class RegistryError(Exception):
