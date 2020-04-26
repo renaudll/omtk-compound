@@ -7,7 +7,8 @@ import shutil
 
 from ._constants import FILE_METADATA_PREFIX
 
-_REGEX_MA_HEADER = re.compile(r"^//Maya ASCII .* scene$")
+# Note: We don't match "$" as it won't work with Windows "\r\n".
+_REGEX_MA_HEADER = re.compile(r"^//Maya ASCII .* scene")
 
 _REGEX_FILE_INFO = re.compile('^fileInfo "(.*)" "(.*)";')
 
