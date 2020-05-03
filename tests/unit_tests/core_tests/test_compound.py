@@ -69,6 +69,11 @@ def scene_complex(cmds):
     cmds.connectAttr("test:body.translateX", "test:outputs.testOutput")
     cmds.connectAttr("test:outputs.testOutput", "outputs.translateX")
 
+    cmds.addAttr("test:inputs", longName="testInputMatrix", dataType="matrix")
+    cmds.addAttr("test:outputs", longName="testOutputMatrix", dataType="matrix")
+    cmds.connectAttr("inputs.matrix", "test:inputs.testInputMatrix")
+    cmds.connectAttr("test:inputs.testInputMatrix", "test:outputs.testOutputMatrix")
+
 
 @pytest.fixture
 def compound(scene):  # pylint: disable=unused-argument
@@ -175,10 +180,18 @@ def test_explode_namespace(cmds, compound):
     assert not cmds.namespace(exists="test")
 
 
-@pytest.mark.usefixtures("cmds")
-def test_explode_connections(compound2):
+def test_explode_connections(cmds, compound2):
     """Validate exploding a compound preserve the connections."""
     compound2.explode()
+
+    assert cmds.connectionInfo("inputs.translateX", destinationFromSource=True) == ["test:body.translateX"]
+    assert cmds.connectionInfo("test:body.translateX", sourceFromDestination=True) == "inputs.translateX"
+    assert cmds.connectionInfo("outputs.translateX", sourceFromDestination=True) == "test:body.translateX"
+    assert cmds.connectionInfo("test:body.translateX", destinationFromSource=True) == ["outputs.translateX"]
+
+
+# TODO: Test that we can preserve scalar values
+# def test_explode_preserve_matrix(cmds, compound2)
 
 
 @pytest.mark.usefixtures("cmds")
