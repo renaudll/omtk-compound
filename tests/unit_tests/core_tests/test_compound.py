@@ -184,10 +184,20 @@ def test_explode_connections(cmds, compound2):
     """Validate exploding a compound preserve the connections."""
     compound2.explode()
 
-    assert cmds.connectionInfo("inputs.translateX", destinationFromSource=True) == ["test:body.translateX"]
-    assert cmds.connectionInfo("test:body.translateX", sourceFromDestination=True) == "inputs.translateX"
-    assert cmds.connectionInfo("outputs.translateX", sourceFromDestination=True) == "test:body.translateX"
-    assert cmds.connectionInfo("test:body.translateX", destinationFromSource=True) == ["outputs.translateX"]
+    assert cmds.connectionInfo("inputs.translateX", destinationFromSource=True) == [
+        "test:body.translateX"
+    ]
+    assert (
+        cmds.connectionInfo("test:body.translateX", sourceFromDestination=True)
+        == "inputs.translateX"
+    )
+    assert (
+        cmds.connectionInfo("outputs.translateX", sourceFromDestination=True)
+        == "test:body.translateX"
+    )
+    assert cmds.connectionInfo("test:body.translateX", destinationFromSource=True) == [
+        "outputs.translateX"
+    ]
 
 
 # TODO: Test that we can preserve scalar values
@@ -246,7 +256,10 @@ def test_get_connections(compound2):
     """Validate we can get a compound connections."""
     actual = compound2.get_connections()
     expected = (
-        {u"test:inputs.testInput": [u"inputs.translateX"]},
+        {
+            u"test:inputs.testInput": [u"inputs.translateX"],
+            u"test:inputs.testInputMatrix": ["inputs.matrix"],
+        },
         {u"test:outputs.testOutput": [u"outputs.translateX"]},
     )
     assert actual == expected

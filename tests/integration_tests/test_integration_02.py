@@ -21,7 +21,7 @@ def test_integration(cmds):
     create_from_nodes(["util"], expose=True)
 
 
-def test_unitConversin(cmds):  # pylint: disable=invalid-name
+def test_unitConversion(cmds):  # pylint: disable=invalid-name
     """
     Test we can understand TdataNumeric attributes.
     unitConversion nodes are a good case.
@@ -29,6 +29,6 @@ def test_unitConversin(cmds):  # pylint: disable=invalid-name
     cmds.createNode("transform")
     cmds.createNode("unitConversion")
     cmds.connectAttr("transform1.rotateX", "unitConversion1.input")
-    cmds.connectAttr("unitConversion1.output", "transform.translateX")
+    cmds.connectAttr("unitConversion1.output", "transform1.translateX")
 
-    create_from_nodes(["unitConversion"], expose=True)
+    create_from_nodes(["unitConversion1"], expose=True)

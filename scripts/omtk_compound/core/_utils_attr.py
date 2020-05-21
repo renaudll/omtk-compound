@@ -32,18 +32,16 @@ def expose_attribute(
     src_path = "%s.%s" % (src_node, src_name)
 
     # Get MFnAttribute
-    # TODO: Do it without pymel
-    src_attr = pymel.Attribute(src_path)
-    # dst_attr = pymel.Attribute(dst_path)
-    mfn_attr = src_attr.__apimattr__()
+    src_attr = pymel.Attribute(src_path)  # TODO: Remove pymel usage
     root_attr = src_attr.array() if src_attr.isElement() else src_attr
-
     attr_long_name = root_attr.longName()
     attr_short_name = root_attr.shortName()
+
     _LOG.debug("Exposed attribute is %r", root_attr)
 
     existing_long_names = cmds.listAttr(str(dst_node))
     existing_short_names = cmds.listAttr(str(dst_node), shortNames=True)
+
     _LOG.debug("Existing long names: %s", existing_long_names)
     _LOG.debug("Existing short names: %s", existing_short_names)
 
@@ -57,24 +55,93 @@ def expose_attribute(
     dst_path_conformed = "%s.%s" % (dst_node, unique_long_name)
     _LOG.debug("Conformed %r to %r", dst_name, unique_short_name)
 
+    # Generic attribute (Tdatacompound) cannot be constructed in MEL.
+    # TODO: Use the OpenMaya method as the only transfer method?
+    if src_attr.type() == "generic":
+        _expose_generic_attribute(
+            src_attr, dst_node, unique_long_name, unique_short_name
+        )
+    else:
+        _expose_attribute_mel(
+            src_attr,
+            dst_node,
+            attr_long_name,
+            attr_short_name,
+            unique_long_name,
+            unique_short_name,
+        )
+
+    return dst_path_conformed
+
+
+def _expose_generic_attribute(attr, dst_node, dst_name, attr_short_name):
+    """
+    Transfer a GENERIC attribute from a node to another.
+
+    :param attr: The attribute to transfer
+    :type attr: pymel.Attribute
+    :param str dst_node: The node to create the new attribute on
+    :param str dst_name: The new attribute long name
+    :param attr_short_name: The new attribute short name
+    """
+    old_mfn = OpenMaya.MFnGenericAttribute(attr.__apimobject__())
+
+    accepts = [
+        idx
+        for idx in range(OpenMaya.MFnData.kInvalid + 1, OpenMaya.MFnData.kLast)
+        if old_mfn.accepts(idx)
+    ]
+
+    new_mfn = OpenMaya.MFnGenericAttribute()
+    new_mobject = new_mfn.create(dst_name, attr_short_name)
+    for accept in accepts:
+        new_mfn.addDataAccept(accept)
+
+    new_mfn.setWritable(old_mfn.isWritable())
+    new_mfn.setReadable(old_mfn.isReadable())
+    new_mfn.setCached(old_mfn.isCached())
+    new_mfn.setStorable(old_mfn.isStorable())
+
+    node_mfn = pymel.PyNode(dst_node).__apimfn__()
+    node_mfn.addAttribute(new_mobject)
+
+
+def _expose_attribute_mel(  # pylint: disable=too-many-arguments
+    attr, dst_node, old_long_name, old_short_name, new_long_name, new_short_name
+):
+    """
+    Transfer an attribute from a node to another.
+    Note that it don't work with generic attributes.
+
+    :param attr: The attribute to transfer
+    :type attr: pymel.Attribute
+    :param str dst_node: The node to transfer to attribute to.
+    :param str old_long_name: The attribute old long name
+    :param str old_short_name: The attribute old short name
+    :param str new_long_name: The attribute new long name
+    :param str new_short_name: The attribute new short name
+    """
+    mfn_attr = attr.__apimattr__()
+
     # Compound attribute need to be handled differently
-    if src_attr.isCompound():
+    if attr.isCompound():
         mfn_attr = OpenMaya.MFnCompoundAttribute(mfn_attr.object())
         mel_cmds = []
         mfn_attr.getAddAttrCmds(mel_cmds)
 
         # Rename the children parent attributes
         mel_cmds = [
-            mel_cmd.replace('-p "%s"' % attr_long_name, '-p "%s"' % unique_long_name)
+            mel_cmd.replace('-p "%s"' % old_long_name, '-p "%s"' % new_long_name)
             for mel_cmd in mel_cmds
         ]
 
     else:
         mel_cmd = mfn_attr.getAddAttrCmd()
+
         # If we are transferring a child attribute,
         # we want to ignore any parent he might have.
         # Sadly modifying the mel script seem like the most simple way atm.
-        if src_attr.isChild():
+        if attr.isChild():
             mel_cmd = re.sub(r'-p "\w+"', "", mel_cmd)
 
         mel_cmds = [mel_cmd]
@@ -82,34 +149,26 @@ def expose_attribute(
     # If our compound is an element of a multi-attribute,
     # we'll want to make the new attribute non-multi.
     # Sadly modifying the mel script seem like the most simple way atm.
-
-    # src_attr_is_element = attr.isElement()
-    # _LOG.debug(">>> src is element?: %s", src_attr_is_element)
-    # if src_attr_is_element:
     mel_cmds[0] = mel_cmds[0].replace(" -m ", " ")  # -m is for --multi attribute
 
-    # TODO: Optimize
-    _LOG.info("Replacing long name %r by %r...", src_name, unique_long_name)
+    _LOG.info("Replacing long name %r by %r", old_long_name, new_long_name)
     mel_cmds = [
         # Note: Last quote (") is missing by purpose
-        mel_cmd.replace('-ln "%s' % attr_long_name, '-ln "%s' % unique_long_name)
+        mel_cmd.replace('-ln "%s' % old_long_name, '-ln "%s' % new_long_name)
         for mel_cmd in mel_cmds
     ]
 
-    _LOG.info("Replacing short name %r by %r...", attr_short_name, unique_short_name)
+    _LOG.info("Replacing short name %r by %r", old_short_name, new_short_name)
     mel_cmds = [
         # Note: Last quote (") is missing by by purpose
-        mel_cmd.replace('-sn "%s' % attr_short_name, '-sn "%s' % unique_short_name)
+        mel_cmd.replace('-sn "%s' % old_short_name, '-sn "%s' % new_short_name)
         for mel_cmd in mel_cmds
     ]
-
     # Run MEL payload
     cmds.select(dst_node)
     for mel_cmd in mel_cmds:
         _LOG.debug(mel_cmd)
         mel.eval(mel_cmd)
-
-    return dst_path_conformed
 
 
 def hold_connections(attrs, hold_inputs=True, hold_outputs=True):
