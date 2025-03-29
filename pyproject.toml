@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "omtk-compound"
+version = "0.1.0"
+description = "Lightweight encapsulation framework for Autodesk Maya"
+authors = [{ name = "Renaud Lessard Larouche", email = "sigmao@gmail.com" }]
+license = { text = "MIT" }
+requires-python = ">=3.7"
+dependencies = []

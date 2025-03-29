@@ -15,5 +15,5 @@ htmlcov/
 # Documentation
 docs/build
 
-# Tox
-.tox
+# Pycharm
+.idea/

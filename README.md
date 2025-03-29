@@ -143,22 +143,25 @@ Any outdated instances of the compound can easily be updated to their new versio
 
 For example if you fix a bug in the left arm, you can republish it and update the right arm.
 
+## Development setup
+
+This project rely on `uv` for development.
+
+Install it by [following the instructions](https://docs.astral.sh/uv/getting-started/installation).
+
 ## Running the tests
 
-
-To run the tests you'll need have tox installed.
-
-```bash
-pip install tox
-```
-
-Then assuming you have python-2, and maya-2020 on your system, you can run all checks with:
+The project use `nox` to run the tests.
 
 ```bash
-tox -e test-maya2020-win
+uvx nox
 ```
 
-See the `tox.ini` file for the list of all environments available.
+You can run a specific test using the `-e` argument.
+
+```bash
+uvx nox -e pylint
+```
 
 ## Contributing
 
