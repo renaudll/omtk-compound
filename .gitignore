@@ -6,6 +6,7 @@ venv
 
 # Python dist
 *.egg-info/
+build/
 
 # Coverage
 .coverage
