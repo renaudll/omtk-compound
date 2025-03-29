@@ -68,20 +68,11 @@ def ruff(session):
     session.run("ruff", "check", *test_targets)
 
 
-@nox.session(name="black-check", python="3.11")
-def black_check(session):
+@nox.session()
+def ruff_format(session):
     """Check formatting with black."""
-    session.install("black")
-    session.env.update({"LC_ALL": "C.UTF-8", "LANG": "C.UTF-8"})
-    session.run("black", "--check", *test_targets)
-
-
-@nox.session(name="black-reformat", python="3.11")
-def black_reformat(session):
-    """Reformat code with black."""
-    session.install("black")
-    session.env.update({"LC_ALL": "C.UTF-8", "LANG": "C.UTF-8"})
-    session.run("black", *test_targets)
+    session.install("ruff")
+    session.run("ruff", "format")
 
 
 def _add_uv_site_packages_to_python_path(session):

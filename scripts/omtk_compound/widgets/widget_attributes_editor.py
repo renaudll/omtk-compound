@@ -8,9 +8,7 @@ from omtk_compound.models import ModelAttributes
 from .ui import widget_attributes_editor as ui_def
 
 
-class AttributesEditorWidget(
-    QtWidgets.QWidget
-):  # pylint: disable=too-few-public-methods
+class AttributesEditorWidget(QtWidgets.QWidget):  # pylint: disable=too-few-public-methods
     """
     QWidget that show a list of attributes and allow them to be renamed/reordered.
     """

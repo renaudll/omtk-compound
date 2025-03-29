@@ -736,9 +736,9 @@ def _wrapinstance(ptr, base=None):
     """
 
     assert isinstance(ptr, long), "Argument 'ptr' must be of type <long>"
-    assert (base is None) or issubclass(
-        base, Qt.QtCore.QObject
-    ), "Argument 'base' must be of type <QObject>"
+    assert (base is None) or issubclass(base, Qt.QtCore.QObject), (
+        "Argument 'base' must be of type <QObject>"
+    )
 
     if Qt.IsPyQt4 or Qt.IsPyQt5:
         func = getattr(Qt, "_sip").wrapinstance

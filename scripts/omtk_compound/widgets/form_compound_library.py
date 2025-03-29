@@ -75,7 +75,5 @@ class FormCompoundLibrary(QtWidgets.QMainWindow):
         """
         selected = self.ui.tableView_compounds.selectedIndexes()
         index = next((index for index in selected))
-        compound_def = self.compound_model.data(
-            index, DataRole
-        )  # type: omtk_compound.CompoundDefinition
+        compound_def = self.compound_model.data(index, DataRole)  # type: omtk_compound.CompoundDefinition
         return compound_def

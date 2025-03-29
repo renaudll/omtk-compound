@@ -14,9 +14,7 @@ from . import _utils_namespace
 _LOG = logging.getLogger(__name__)
 
 
-def expose_attribute(
-    src_node, dst_node, src_name, dst_name=None
-):  # pylint: disable=too-many-locals
+def expose_attribute(src_node, dst_node, src_name, dst_name=None):  # pylint: disable=too-many-locals
     """
     Copy an existing attribute from a node to another.
 
