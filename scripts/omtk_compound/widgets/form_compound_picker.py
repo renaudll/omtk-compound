@@ -1,6 +1,7 @@
 """
 Modal dialog for picking a compound definition from a registry.
 """
+
 from omtk_compound.core import CompoundDefinition
 from omtk_compound.vendor.Qt import QtCore, QtWidgets
 from omtk_compound.widgets.ui import form_compound_picker as ui_def

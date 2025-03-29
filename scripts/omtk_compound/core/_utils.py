@@ -1,4 +1,5 @@
-""" Various utility methods """
+"""Various utility methods"""
+
 import itertools
 import re
 from contextlib import contextmanager
@@ -37,7 +38,7 @@ def get_unique_key(name, all_names, naming_format="{0}{1}", start=1):
 
 
 def pairwise(iterable):
-    """ Consume an iterable by yielded two values at the time.
+    """Consume an iterable by yielded two values at the time.
     Recipe from: https://docs.python.org/2/library/itertools.html
 
     :param Iterable iterable: An iterable
@@ -46,12 +47,12 @@ def pairwise(iterable):
     """
     iter_a, iter_b = itertools.tee(iterable)
     next(iter_b, None)
-    return itertools.izip(iter_a, iter_b)
+    return zip(iter_a, iter_b)
 
 
 @contextmanager
 def preserve_selection():
-    """ Context that preserve the current selection.
+    """Context that preserve the current selection.
 
     :return: A context
     :rtype: Generator

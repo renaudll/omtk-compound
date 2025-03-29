@@ -1,6 +1,7 @@
 """
 Utility method for dealing with namespaces.
 """
+
 import contextlib
 
 import re
@@ -92,12 +93,13 @@ def with_temporary_namespace(namespace):
 
 
 def get_namespace(value):
-    """ Get a namespace from an arbitrary value_.
+    """Get a namespace from an arbitrary value_.
 
     :param object value: A value to extract a namespace from
     :return: A namespace
     :rtype: str
     """
+
     # TODO: Deprecate this, we should alway use strings.
     def _get(value_):
         # type: (object) -> str

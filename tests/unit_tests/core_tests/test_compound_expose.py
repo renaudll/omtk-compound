@@ -1,6 +1,7 @@
 """
 Test for exposing an attribute.
 """
+
 # pylint: disable=redefined-outer-name
 import pytest
 

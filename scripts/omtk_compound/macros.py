@@ -1,6 +1,7 @@
 """
 High levels commands made to be called from a menu, shelf, hotkey or runtime command.
 """
+
 # pylint: disable=global-statement
 from maya import cmds
 
@@ -20,7 +21,7 @@ _GUI_COMPOUND_MANAGER = None
 
 
 def _get_compound_from_selection():
-    """ Helper method that retrieve the currently selected compound.
+    """Helper method that retrieve the currently selected compound.
 
     :return: The currently selected compound
     :rtype: omtk_compound.Compound
@@ -36,7 +37,7 @@ def _get_compound_from_selection():
 
 
 def create_compound():
-    """ Create a compound from selected nodes. """
+    """Create a compound from selected nodes."""
     sel = cmds.ls(selection=True, long=True)
     if not sel:
         cmds.warning("No nodes selected")
@@ -47,19 +48,19 @@ def create_compound():
 
 
 def update_compound():
-    """ Update a compound to it's latest version. """
+    """Update a compound to it's latest version."""
     inst = _get_compound_from_selection()
     manager.update_compound(inst)
 
 
 def explode_compound():
-    """ Explode the selected compound. """
+    """Explode the selected compound."""
     inst = _get_compound_from_selection()
     inst.explode(remove_namespace=True)
 
 
 def show_form_add_attribute():
-    """ Show a UI that help with attribute creation. """
+    """Show a UI that help with attribute creation."""
     from omtk_compound.widgets.form_add_attribute import FormCreateAttribute
 
     global _GUI_ADD_ATTRIBUTE
@@ -69,7 +70,7 @@ def show_form_add_attribute():
 
 
 def show_form_publish_compound():
-    """ Publish the selected compound. """
+    """Publish the selected compound."""
     from omtk_compound.widgets.form_compound_publish import FormPublishCompound
 
     global _GUI_COMPOUND_PUBLISHER

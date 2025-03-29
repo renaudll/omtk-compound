@@ -1,6 +1,7 @@
 """
 Entry point for initializing omtk_compound from the userSetup.
 """
+
 import logging
 from maya import cmds
 
@@ -72,8 +73,7 @@ _ENTRIES = (
 
 
 def create_runtime_commands():
-    """ Register macros so they can be bind to hotkeys.
-    """
+    """Register macros so they can be bind to hotkeys."""
     for label, _, fn_name, command in _ENTRIES:
         # Remove old command if necessary
         if cmds.runTimeCommand(fn_name, exists=True):
@@ -86,7 +86,7 @@ def create_runtime_commands():
 
 
 def _initialize_shelf(shelf):
-    """ Create a shelf, deleting the previous one if needed.
+    """Create a shelf, deleting the previous one if needed.
 
     :param shelf: The name of the shelf
     """
@@ -99,8 +99,7 @@ def _initialize_shelf(shelf):
 
 
 def build_shelf():
-    """ Build the omtk_compound shelf
-    """
+    """Build the omtk_compound shelf"""
     _LOG.debug("Creating shelf")
 
     shelf_name = "omtk_compound"
@@ -118,8 +117,7 @@ def build_shelf():
 
 
 def bootstrap():
-    """ Main entry point for initialization. Called from userSetup.py.
-    """
+    """Main entry point for initialization. Called from userSetup.py."""
     create_runtime_commands()
     if not cmds.about(batch=True):
         build_shelf()

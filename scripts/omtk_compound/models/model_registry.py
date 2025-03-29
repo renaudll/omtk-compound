@@ -1,6 +1,7 @@
 """
 Model for displaying a registered component definitions in a QTableView.
 """
+
 from ..core._definition import CompoundDefinition
 from ..vendor.Qt import QtCore
 from ._roles import DataRole

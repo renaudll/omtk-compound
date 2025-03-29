@@ -1,6 +1,7 @@
 """
 Public entry points. All members are part of the public API.
 """
+
 from omtk_compound.core import (
     Compound,
     CompoundDefinition,

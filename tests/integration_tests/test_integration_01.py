@@ -1,6 +1,7 @@
 """
 High level integration tests
 """
+
 # pylint: disable=redefined-outer-name
 import pymel.core as pymel
 import pytest

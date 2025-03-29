@@ -1,6 +1,7 @@
 """
 Tests for omtk_compound.core._utils_namespace
 """
+
 import pytest
 
 from omtk_compound.core._utils_namespace import (

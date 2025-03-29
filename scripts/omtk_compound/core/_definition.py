@@ -1,6 +1,7 @@
 """
 A CompoundDefinition hold information about a registered compound.
 """
+
 import logging
 import uuid
 
@@ -13,7 +14,7 @@ _MANDATORY_FIELDS = {"uid", "name", "version"}
 
 
 def _validate(mapping):
-    """ Ensure all mandatory keys in a definition mapping are defined.
+    """Ensure all mandatory keys in a definition mapping are defined.
 
     :param dict mapping: A definition dict
     :raises ValueError: If some mandatory keys are missing
@@ -130,7 +131,7 @@ class CompoundDefinition(dict):
 
     @classmethod
     def from_file(cls, path):
-        """ Initialize a compound definition from a maya file by parsing it's header.
+        """Initialize a compound definition from a maya file by parsing it's header.
 
         :param str path:
         :return: A new compound definition instance
@@ -143,7 +144,7 @@ class CompoundDefinition(dict):
         return inst
 
     def write_metadata_to_file(self, path):
-        """ Write the definition to a maya ascii (.ma) file.
+        """Write the definition to a maya ascii (.ma) file.
 
         :param path: Path to a maya ascii (.ma) file
         :return: True if successful, False otherwise.

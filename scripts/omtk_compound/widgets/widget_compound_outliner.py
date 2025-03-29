@@ -1,6 +1,7 @@
 """
 QWidget that list compound instances in the scene.
 """
+
 import logging
 
 from maya import cmds

@@ -4,6 +4,8 @@ The goal of this project is to provide a universal mechanism to facilitate encap
 
 > **WARNING**: This project is currently in alpha stage and should not be considered stable for production. 
 
+Does not support Python-2.
+
 ## What is encapsulation?
 
 Encapsulation is a common mechanism critical to domain like special effects and rigging. 

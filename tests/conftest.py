@@ -1,6 +1,7 @@
 """
 Common pytest fixtures
 """
+
 # pylint: disable=redefined-outer-name
 import pytest
 

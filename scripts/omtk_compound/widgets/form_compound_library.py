@@ -1,6 +1,7 @@
 """
 Window that show the available registered compounds.
 """
+
 from omtk_compound.vendor.Qt import QtWidgets
 from omtk_compound.core._factory import from_file
 from omtk_compound import manager

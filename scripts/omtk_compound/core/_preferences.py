@@ -7,6 +7,7 @@ They can be individually overwritten with environment variables.
 For example the "default_author" entry
 can be overwritten with OMTK_COMPONENT_DEFAULT_AUTHOR.
 """
+
 import logging
 import os
 
@@ -78,7 +79,7 @@ class Preferences(object):
 
     @staticmethod
     def _get_option_var_name(key):
-        """ Compute an optionVar name from an entry.
+        """Compute an optionVar name from an entry.
 
         :param str key: The entry key
         :return: The optionVar name
@@ -87,7 +88,7 @@ class Preferences(object):
         return _PREFIX + key
 
     def save(self):
-        """ Save all preferences to optionVar. """
+        """Save all preferences to optionVar."""
         for key in _SCHEMA:
             value = self[key]
             # for now, only string values are supported
@@ -106,7 +107,7 @@ class Preferences(object):
     #             self[key] = value
 
     def uninstall(self):
-        """ Remove all preferences from optionVar. """
+        """Remove all preferences from optionVar."""
         for key in _SCHEMA:
             option_var = self._get_option_var_name(key)
             if cmds.optionVar(exists=option_var):

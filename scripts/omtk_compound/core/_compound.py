@@ -2,6 +2,7 @@
 A Compound represent encapsulation in Maya
 via a namespace and an input and output attribute holder networks.
 """
+
 import ast
 import logging
 import six
@@ -25,7 +26,7 @@ class CompoundValidationError(CompoundError):
 
 
 class Compound(object):  # pylint: disable=too-many-public-methods
-    """ An instance of a network of Maya nodes that represent encapsulation.
+    """An instance of a network of Maya nodes that represent encapsulation.
     It share a common namespace and have an input and output networks.
     """
 
@@ -46,8 +47,7 @@ class Compound(object):  # pylint: disable=too-many-public-methods
         return "<Compound %r>" % self.dagpath
 
     def __len__(self):
-        """ The number of nodes inside the compound.
-        """
+        """The number of nodes inside the compound."""
         return len(self.nodes)
 
     def __iter__(self):
@@ -58,7 +58,7 @@ class Compound(object):  # pylint: disable=too-many-public-methods
         return self.iter()
 
     def __melobject__(self):
-        """ The dagpath of a compound is it's namespace.
+        """The dagpath of a compound is it's namespace.
 
         :return: The compound namespace, ex: `namespace`
         :rtype: str
@@ -110,7 +110,7 @@ class Compound(object):  # pylint: disable=too-many-public-methods
         return [prefix + attr_name for attr_name in attr_names]
 
     def validate(self):
-        """ Validate the compound. Raise an exception in case of failure.
+        """Validate the compound. Raise an exception in case of failure.
 
         :raises CompoundValidationError: If the compound don't validate.
         """
@@ -124,7 +124,7 @@ class Compound(object):  # pylint: disable=too-many-public-methods
             raise CompoundValidationError("%r don't exist." % self.output)
 
     def get_metadata(self):
-        """ A compound can have associated metadata.
+        """A compound can have associated metadata.
         This generally mean an ID, a name and a version, but it's all arbitrary.
         The metadata is stored in the input node.
 
@@ -146,7 +146,7 @@ class Compound(object):  # pylint: disable=too-many-public-methods
         return metadata
 
     def set_metadata(self, metadata):
-        """ Set the metadata stored in the compound as an attribute.
+        """Set the metadata stored in the compound as an attribute.
 
         :param dict metadata: The new metadata to set
         """
@@ -174,7 +174,7 @@ class Compound(object):  # pylint: disable=too-many-public-methods
         cmds.setAttr(attr, metadata_str, type="string")
 
     def iter(self):
-        """ Iterate through nodes in the graph.
+        """Iterate through nodes in the graph.
 
         :rtype: Generator[str]
         """
@@ -239,7 +239,7 @@ class Compound(object):  # pylint: disable=too-many-public-methods
     # --- Interface management ---
 
     def add_input_attr(self, long_name, **kwargs):
-        """ Wrapper around `cmds.addAttr` that create an input attribute.
+        """Wrapper around `cmds.addAttr` that create an input attribute.
 
         :param str long_name: Name of the attribute to create.
         :param dict kwargs: Keyword arguments are forwarded to `cmds.addAttr`
@@ -248,7 +248,7 @@ class Compound(object):  # pylint: disable=too-many-public-methods
         cmds.addAttr(self.input, longName=long_name, **kwargs)
 
     def add_output_attr(self, long_name, **kwargs):
-        """ Wrapper around `cmds.addAttr` that create an output attribute.
+        """Wrapper around `cmds.addAttr` that create an output attribute.
 
         :param str long_name: Name of the attribute to create.
         :param dict kwargs: Keyword arguments are forwarded to `cmds.addAttr`
@@ -257,7 +257,7 @@ class Compound(object):  # pylint: disable=too-many-public-methods
         cmds.addAttr(self.output, longName=long_name, **kwargs)
 
     def has_input_attr(self, attr_name):
-        """ Check if a provided input attribute exist.
+        """Check if a provided input attribute exist.
 
         :param str attr_name: An attribute name
         :return: Does the attribute exist?
@@ -266,7 +266,7 @@ class Compound(object):  # pylint: disable=too-many-public-methods
         return cmds.objExists("%s.%s" % (self.input, attr_name))
 
     def has_output_attr(self, attr_name):
-        """ Check if a provided output attribute exist.
+        """Check if a provided output attribute exist.
 
         :param str attr_name: An attribute name
         :return: Does the attribute exist?
@@ -275,7 +275,7 @@ class Compound(object):  # pylint: disable=too-many-public-methods
         return cmds.objExists("%s.%s" % (self.output, attr_name))
 
     def expose_input_attr(self, dagpath):
-        """ Expose an attribute as an input attribute of the compound.
+        """Expose an attribute as an input attribute of the compound.
 
         :param str dagpath: The attribute to expose
         :return: The dagpath of the exposed attribute
@@ -361,7 +361,7 @@ class Compound(object):  # pylint: disable=too-many-public-methods
 
         def _remap_attr(attr_):
             attr_ = (
-                pymel.Attribute(attr_) if isinstance(attr_, basestring) else None
+                pymel.Attribute(attr_) if isinstance(attr_, str) else None
             )  # conform
             attr_src = next(iter(attr_.inputs(plugs=True)), None)
             if attr_src:
@@ -393,6 +393,7 @@ class Compound(object):  # pylint: disable=too-many-public-methods
         This help with updating/promoting compound.
         :rtype: tuple(dict, dict)
         """
+
         # TODO: Remove pymel usage
         # TODO: Cleanup
         def _conform(attr_):
@@ -402,10 +403,10 @@ class Compound(object):  # pylint: disable=too-many-public-methods
         map_out = {}
         for attr in pymel.PyNode(self.input).listAttr(userDefined=True):
             if attr.isDestination():
-                map_inn[_conform(attr)] = map(_conform, attr.inputs(plugs=True))
+                map_inn[_conform(attr)] = list(map(_conform, attr.inputs(plugs=True)))
         for attr in pymel.PyNode(self.output).listAttr(userDefined=True):
             if attr.isSource():
-                map_out[_conform(attr)] = map(_conform, attr.outputs(plugs=True))
+                map_out[_conform(attr)] = list(map(_conform, attr.outputs(plugs=True)))
         return map_inn, map_out
 
     def hold_connections(self):
@@ -418,11 +419,11 @@ class Compound(object):  # pylint: disable=too-many-public-methods
         # TODO: Remove pymel usage
         map_inn, map_out = self.get_connections()
 
-        for attr_dst, attr_srcs in map_inn.iteritems():
+        for attr_dst, attr_srcs in map_inn.items():
             for attr_src in attr_srcs:
                 cmds.disconnectAttr(attr_src, attr_dst)
 
-        for attr_src, attr_dsts in map_out.iteritems():
+        for attr_src, attr_dsts in map_out.items():
             for attr_dst in attr_dsts:
                 cmds.disconnectAttr(attr_src, attr_dst)
 
@@ -438,11 +439,11 @@ class Compound(object):  # pylint: disable=too-many-public-methods
         :param map_out: Output connections to create
         :type map_out: dict[str, str]
         """
-        for attr_dst, attr_srcs in map_inn.iteritems():
+        for attr_dst, attr_srcs in map_inn.items():
             for attr_src in attr_srcs:
                 cmds.connectAttr(attr_src, attr_dst)
 
-        for attr_src, attr_dsts in map_out.iteritems():
+        for attr_src, attr_dsts in map_out.items():
             for attr_dst in attr_dsts:
                 cmds.connectAttr(attr_src, attr_dst)
 

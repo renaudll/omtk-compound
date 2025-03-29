@@ -1,6 +1,7 @@
 """
 QWidget that show a list of attributes and allow them to be renamed/reordered.
 """
+
 from omtk_compound.vendor.Qt import QtCore, QtWidgets, QtCompat
 from omtk_compound.models import ModelAttributes
 

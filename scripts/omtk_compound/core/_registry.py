@@ -1,11 +1,10 @@
 """
 Registry hold all known compound definitions.
 """
-import os
-from collections import defaultdict
 
-import collections
-import six
+import os
+from collections.abc import Mapping
+from collections import defaultdict
 
 from ._definition import CompoundDefinition
 
@@ -47,7 +46,7 @@ class Registry(object):
         self._store = defaultdict(VersionStream)
 
     def __iter__(self):  # TODO: Should return VersionStream
-        for uid, versions in six.iteritems(self._store):
+        for uid, versions in self._store.items():
             for version in versions:
                 yield uid, version
 
@@ -95,7 +94,7 @@ class Registry(object):
         :raises AlreadyRegisteredError: If the provided entry is already registered
         """
         for entry in entries:
-            if not isinstance(entry, collections.Mapping):
+            if not isinstance(entry, Mapping):
                 raise TypeError(
                     "Expected mapping, got %s: %s" % (type(entry).__name__, entry)
                 )
@@ -103,7 +102,7 @@ class Registry(object):
             self._store[entry.uid][entry.version] = entry
 
     def unregister(self, entry):
-        """ Unregister an entry
+        """Unregister an entry
 
         :param entry: The entry to unregister
         :raises NotRegisteredError: When the entry to unregister was never registered.
@@ -114,8 +113,7 @@ class Registry(object):
             raise NotRegisteredError("%s is not registered" % entry)
 
     def parse_directory(self, startdir):
-        """ Scan a directory and register any found definitions.
-        """
+        """Scan a directory and register any found definitions."""
         for rootdir, _, filenames in os.walk(startdir):
             for filename in filenames:
                 if filename.endswith(".ma"):

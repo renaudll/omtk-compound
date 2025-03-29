@@ -1,6 +1,7 @@
 """
 Tests for omtk_compound.core._definition
 """
+
 # pylint: disable=redefined-outer-name
 import pytest
 

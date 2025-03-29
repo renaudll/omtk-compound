@@ -1,6 +1,7 @@
 """
 Base model classes
 """
+
 from ..vendor.Qt import QtCore
 
 

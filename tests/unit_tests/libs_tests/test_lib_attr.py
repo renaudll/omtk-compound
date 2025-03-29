@@ -1,6 +1,7 @@
 """
 Tests for omtk_compound.core._utils_attr
 """
+
 from maya import cmds
 
 from omtk_compound.core._utils_attr import expose_attribute, reorder_attributes

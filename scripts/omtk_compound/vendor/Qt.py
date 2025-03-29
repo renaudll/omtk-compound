@@ -1092,7 +1092,9 @@ interface for obsolete members, and differences in binding return values.
 """
 _compatibility_members = {
     "PySide2": {
-        "QWidget": {"grab": "QtWidgets.QWidget.grab",},
+        "QWidget": {
+            "grab": "QtWidgets.QWidget.grab",
+        },
         "QHeaderView": {
             "sectionsClickable": "QtWidgets.QHeaderView.sectionsClickable",
             "setSectionsClickable": "QtWidgets.QHeaderView.setSectionsClickable",
@@ -1108,7 +1110,9 @@ _compatibility_members = {
         },
     },
     "PyQt5": {
-        "QWidget": {"grab": "QtWidgets.QWidget.grab",},
+        "QWidget": {
+            "grab": "QtWidgets.QWidget.grab",
+        },
         "QHeaderView": {
             "sectionsClickable": "QtWidgets.QHeaderView.sectionsClickable",
             "setSectionsClickable": "QtWidgets.QHeaderView.setSectionsClickable",
@@ -1124,7 +1128,9 @@ _compatibility_members = {
         },
     },
     "PySide": {
-        "QWidget": {"grab": "QtWidgets.QPixmap.grabWidget",},
+        "QWidget": {
+            "grab": "QtWidgets.QPixmap.grabWidget",
+        },
         "QHeaderView": {
             "sectionsClickable": "QtWidgets.QHeaderView.isClickable",
             "setSectionsClickable": "QtWidgets.QHeaderView.setClickable",
@@ -1140,7 +1146,9 @@ _compatibility_members = {
         },
     },
     "PyQt4": {
-        "QWidget": {"grab": "QtWidgets.QPixmap.grabWidget",},
+        "QWidget": {
+            "grab": "QtWidgets.QPixmap.grabWidget",
+        },
         "QHeaderView": {
             "sectionsClickable": "QtWidgets.QHeaderView.isClickable",
             "setSectionsClickable": "QtWidgets.QHeaderView.setClickable",
@@ -1379,8 +1387,10 @@ def _pyside2():
 
     if hasattr(Qt, "_QtCore"):
         Qt.__qt_version__ = Qt._QtCore.qVersion()
-        Qt.QtCompat.dataChanged = lambda self, topleft, bottomright, roles=None: self.dataChanged.emit(
-            topleft, bottomright, roles or []
+        Qt.QtCompat.dataChanged = (
+            lambda self, topleft, bottomright, roles=None: self.dataChanged.emit(
+                topleft, bottomright, roles or []
+            )
         )
 
     if hasattr(Qt, "_QtWidgets"):
@@ -1431,8 +1441,10 @@ def _pyside():
 
     if hasattr(Qt, "_QtCore"):
         Qt.__qt_version__ = Qt._QtCore.qVersion()
-        Qt.QtCompat.dataChanged = lambda self, topleft, bottomright, roles=None: self.dataChanged.emit(
-            topleft, bottomright
+        Qt.QtCompat.dataChanged = (
+            lambda self, topleft, bottomright, roles=None: self.dataChanged.emit(
+                topleft, bottomright
+            )
         )
 
     _reassign_misplaced_members("PySide")
@@ -1451,7 +1463,6 @@ def _pyqt5():
 
         extras += ["sip"]
     except ImportError:
-
         # Relevant to PyQt5 5.11 and above
         try:
             from PyQt5 import sip
@@ -1472,8 +1483,10 @@ def _pyqt5():
     if hasattr(Qt, "_QtCore"):
         Qt.__binding_version__ = Qt._QtCore.PYQT_VERSION_STR
         Qt.__qt_version__ = Qt._QtCore.QT_VERSION_STR
-        Qt.QtCompat.dataChanged = lambda self, topleft, bottomright, roles=None: self.dataChanged.emit(
-            topleft, bottomright, roles or []
+        Qt.QtCompat.dataChanged = (
+            lambda self, topleft, bottomright, roles=None: self.dataChanged.emit(
+                topleft, bottomright, roles or []
+            )
         )
 
     if hasattr(Qt, "_QtWidgets"):
@@ -1554,8 +1567,10 @@ def _pyqt4():
     if hasattr(Qt, "_QtCore"):
         Qt.__binding_version__ = Qt._QtCore.PYQT_VERSION_STR
         Qt.__qt_version__ = Qt._QtCore.QT_VERSION_STR
-        Qt.QtCompat.dataChanged = lambda self, topleft, bottomright, roles=None: self.dataChanged.emit(
-            topleft, bottomright
+        Qt.QtCompat.dataChanged = (
+            lambda self, topleft, bottomright, roles=None: self.dataChanged.emit(
+                topleft, bottomright
+            )
         )
 
     _reassign_misplaced_members("PyQt4")
@@ -1650,7 +1665,7 @@ def _cli(args):
     )
     parser.add_argument(
         "--compile",
-        help="Accept raw .ui file and compile with native " "PySide2 compiler.",
+        help="Accept raw .ui file and compile with native PySide2 compiler.",
     )
     parser.add_argument(
         "--stdout", help="Write to stdout instead of file", action="store_true"

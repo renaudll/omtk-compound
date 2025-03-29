@@ -1,6 +1,7 @@
 """
 Widget that display the input and output attributes of a compound.
 """
+
 from omtk_compound.vendor.Qt import QtWidgets
 
 from .ui import widget_compound_editor as ui_def

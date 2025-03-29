@@ -1,6 +1,7 @@
 """
 Method for reading and parsing .ma files.
 """
+
 import re
 import tempfile
 import shutil
@@ -14,7 +15,7 @@ _REGEX_FILE_INFO = re.compile('^fileInfo "(.*)" "(.*)";')
 
 
 def remove_root_namespace(namespace, path):
-    """ Remove a namespace from a file. Overwrite the file.
+    """Remove a namespace from a file. Overwrite the file.
 
     :param str namespace: The namespace to remove
     :param str path: A path to a file to parse.
@@ -60,7 +61,7 @@ def write_metadata_to_ma_file(path, metadata):
                         continue
                         # Only dump the metadata on the last fileInfo encounter
                 elif found:
-                    for key, val in metadata.iteritems():
+                    for key, val in metadata.items():
                         fp_write.write(
                             'fileInfo "{0}{1}" "{2}";\n'.format(
                                 FILE_METADATA_PREFIX, key, val.replace("\n", r"\n")

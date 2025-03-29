@@ -1,4 +1,5 @@
 """Test for omtk_compound.models.model_compound"""
+
 # pylint: disable=redefined-outer-name
 import mock
 import pytest
@@ -30,7 +31,7 @@ def model(compound):
 
 
 def test_headerData(model):  # pylint: disable=invalid-name
-    """ Validate our implementation of `QAbstractItemModel.headerData`. """
+    """Validate our implementation of `QAbstractItemModel.headerData`."""
     expected = ["name", "type", "multi"]
     actual = [
         model.headerData(row, QtCore.Qt.Horizontal, QtCore.Qt.DisplayRole)
@@ -61,7 +62,7 @@ def test_data(model):
 
 
 def test_setData(cmds, model):  # pylint: disable=invalid-name
-    """Validate our implementation `QAbstractItemMode.setData`. """
+    """Validate our implementation `QAbstractItemMode.setData`."""
     model.setData(model.index(0, 0), "zTestAttr1", QtCore.Qt.EditRole)
 
     # Validate the attribute was moved in maya
@@ -74,7 +75,7 @@ def test_setData(cmds, model):  # pylint: disable=invalid-name
 
 
 def test_setData_name_clash(cmds, model):  # pylint: disable=invalid-name
-    """Validate we cannot rename an attribute to a another existing one. """
+    """Validate we cannot rename an attribute to a another existing one."""
     with mock.patch.object(cmds, "warning", side_effect=cmds.warning) as mocked_warning:
         # Note: "testAttr2" already exist
         model.setData(model.index(0, 0), "testAttr2", QtCore.Qt.EditRole)

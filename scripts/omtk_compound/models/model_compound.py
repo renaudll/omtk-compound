@@ -1,6 +1,7 @@
 """
 Model for displaying compounds in a QTableView.
 """
+
 import logging
 import itertools
 from maya import cmds
@@ -84,7 +85,6 @@ class ModelAttributes(QtGui.QStandardItemModel):
         root = self.invisibleRootItem()
         root.setDragEnabled(False)
 
-        # Note: sorted will put None first
         attributes_by_parent = itertools.groupby(
             sorted(attributes, key=_get_attribute_parent), _get_attribute_parent
         )
@@ -94,7 +94,6 @@ class ModelAttributes(QtGui.QStandardItemModel):
             attributes_ = tuple(attributes)
 
             for attribute in attributes_:
-
                 # Get data from attribute
                 parent = item_by_attr.get(parent_attr, root)
                 node_name, attr_name = attribute.split(".", 1)
@@ -165,8 +164,7 @@ class ModelAttributes(QtGui.QStandardItemModel):
 
 
 def _get_attribute_parent(attr):  # type: (str) -> str
-    """ Utility method that return an attribute parent.
-    """
+    """Utility method that return an attribute parent."""
     node_name, attr_name = attr.split(".", 1)
     parents = cmds.attributeQuery(attr_name, node=node_name, listParent=True)
-    return ".".join((node_name, parents[0])) if parents else None
+    return ".".join((node_name, parents[0])) if parents else ""

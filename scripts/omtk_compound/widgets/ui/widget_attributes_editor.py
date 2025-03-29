@@ -7,7 +7,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from omtk_compound.vendor.Qt import QtCompat, QtCore, QtGui, QtWidgets
+from omtk_compound.vendor.Qt import QtCompat, QtCore, QtWidgets
 
 
 class Ui_Form(object):

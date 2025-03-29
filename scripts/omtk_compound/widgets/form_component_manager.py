@@ -2,6 +2,7 @@
 Window that contain multiple widgets at once to ease workflow.
 This is part of UI experimentation and might disappear eventually.
 """
+
 import logging
 
 from omtk_compound.core._factory import from_scene, from_file

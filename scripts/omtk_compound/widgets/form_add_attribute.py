@@ -1,4 +1,5 @@
-""" Helper UI to create Compound. """
+"""Helper UI to create Compound."""
+
 import logging
 
 from maya import cmds
@@ -74,7 +75,7 @@ class FormCreateAttribute(QtWidgets.QMainWindow):
         self.ui.pushButton.pressed.connect(self.on_submit)
 
     def get_attr_type(self):
-        """ Return the attribute type to create
+        """Return the attribute type to create
 
         :return: An attribute type (ex: "string")
         :rtype: str
@@ -95,7 +96,7 @@ class FormCreateAttribute(QtWidgets.QMainWindow):
 
     @staticmethod
     def add_attribute(obj, name, type_, value):
-        """ Add an attribute
+        """Add an attribute
 
         :param str obj: Dagpath of the attribute holder
         :param str name: Attribute name
@@ -111,8 +112,7 @@ class FormCreateAttribute(QtWidgets.QMainWindow):
             cmds.setAttr(attr, value, type=type_)
 
     def on_submit(self):
-        """ Called when the user pressed submit.
-        """
+        """Called when the user pressed submit."""
         name = self.ui.lineEdit_name.text()
         type_ = self.get_attr_type()
         value = self.ui.lineEdit_value.text()

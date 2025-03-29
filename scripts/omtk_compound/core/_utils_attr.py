@@ -1,6 +1,7 @@
 """
 Majority of functions in theses libs could be refactored.
 """
+
 import logging
 import re
 from contextlib import contextmanager

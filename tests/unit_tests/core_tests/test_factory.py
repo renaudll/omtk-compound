@@ -1,4 +1,5 @@
 """Tests for creation of compounds from various sources."""
+
 # pylint: disable=redefined-outer-name
 import pytest
 from maya import cmds
@@ -163,8 +164,7 @@ def test_create_from_nodes_nested_2():
 
 
 def test_create_from_nodes_expose_reused_input_attributes(cmds):
-    """ Ensure that we re-use an attribute if it is used twice as the network input.
-    """
+    """Ensure that we re-use an attribute if it is used twice as the network input."""
     cmds.createNode("transform", name="input1")
     cmds.createNode("transform", name="node1")
     cmds.createNode("transform", name="node2")
@@ -186,7 +186,7 @@ def test_create_from_nodes_expose_reused_input_attributes(cmds):
 
 
 def test_map_from_nodes_expose_simple(cmds):
-    """ Ensure we can create a compound from existing nodes."""
+    """Ensure we can create a compound from existing nodes."""
     cmds.createNode("transform", name="a")
     cmds.createNode("transform", name="b")
     cmds.createNode("transform", name="c")
@@ -207,7 +207,7 @@ def test_map_from_nodes_expose_simple(cmds):
 
 
 def test_map_from_nodes_expose_cyclic(cmds):
-    """ Validate we ignore connections pointing to nodes in the network."""
+    """Validate we ignore connections pointing to nodes in the network."""
     cmds.createNode("transform", name="a")
     cmds.createNode("transform", name="b")
     cmds.createNode("transform", name="c")

@@ -1,4 +1,5 @@
 """Test for omtk_compound.models.model_registry"""
+
 # pylint: disable=redefined-outer-name
 import pytest
 

@@ -1,6 +1,7 @@
 """
 Factory providing compound instances.
 """
+
 import logging
 
 import pymel.core as pymel

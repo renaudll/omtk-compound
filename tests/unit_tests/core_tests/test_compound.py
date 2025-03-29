@@ -1,6 +1,7 @@
 """
 Tests for omtk_compound.core._compound
 """
+
 # pylint: disable=redefined-outer-name
 import os
 
@@ -257,10 +258,10 @@ def test_get_connections(compound2):
     actual = compound2.get_connections()
     expected = (
         {
-            u"test:inputs.testInput": [u"inputs.translateX"],
-            u"test:inputs.testInputMatrix": ["inputs.matrix"],
+            "test:inputs.testInput": ["inputs.translateX"],
+            "test:inputs.testInputMatrix": ["inputs.matrix"],
         },
-        {u"test:outputs.testOutput": [u"outputs.translateX"]},
+        {"test:outputs.testOutput": ["outputs.translateX"]},
     )
     assert actual == expected
 

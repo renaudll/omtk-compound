@@ -1,6 +1,7 @@
 """
 Window used to publish a new compound version.
 """
+
 import uuid
 
 from omtk_compound.core import CompoundDefinition

@@ -1,6 +1,7 @@
 """
 Highest logical level for compound manipulation.
 """
+
 import os
 import logging
 
@@ -41,7 +42,7 @@ class Manager(object):
         return from_file(compound_def.path, namespace=namespace)
 
     def publish_compound(self, compound, force=False):
-        """ Publish a compound
+        """Publish a compound
 
         :param Compound compound: The compound to publish
         :param bool force: Should we overwrite if the destination file exist?
@@ -58,7 +59,7 @@ class Manager(object):
         self.registry.register(compound_def)
 
     def update_compound(self, compound, version=None):
-        """ Update a compound to a new version.
+        """Update a compound to a new version.
 
         :param Compound compound:
         :param version: An optional version string. Otherwise the highest is used.
@@ -77,7 +78,7 @@ class Manager(object):
         new_compound.rename(namespace)
 
     def _get_publish_location(self, compound_def):
-        """ Resolve the destination path of a compound we want to publish.
+        """Resolve the destination path of a compound we want to publish.
 
         :param CompoundDefinition compound_def: A compound definition
         :return: A destination path

@@ -1,6 +1,7 @@
 """
 Model for displaying compounds in a QTableView.
 """
+
 from ..vendor.Qt import QtCore
 from ._roles import DataRole
 from ._base import BaseTableModel

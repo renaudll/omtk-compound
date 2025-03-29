@@ -1,4 +1,5 @@
 """Test cases for the Registry class."""
+
 # pylint: disable=redefined-outer-name
 import pytest
 
