@@ -173,15 +173,17 @@ class Compound:
         # Hold current file
         current_path = cmds.file(q=True, sn=True)
 
-        # Conform to pynode
-        input_ = pymel.PyNode(self.input)
-        output = pymel.PyNode(self.output)
+        # Use maya.cmds instead of pymel
+        input_ = self.input
+        output = self.output
 
-        # todo: optimise this
-        grp_inn_attrs = set(input_.listAttr())
-        grp_inn_attrs.remove(input_.message)
-        grp_out_attrs = set(output.listAttr())
-        grp_out_attrs.remove(output.message)
+        # Collect input attributes, excluding 'message'
+        grp_inn_attrs = {f"{input_}.{attr_name}" for attr_name in cmds.listAttr(input_, settable=True) or ()}
+        grp_inn_attrs.discard('message')
+
+        # Collect output attributes, excluding 'message'
+        grp_out_attrs = {f"{output}.{attr_name}" for attr_name in cmds.listAttr(output, settable=True) or ()}
+        grp_out_attrs.discard('message')
 
         with _utils_attr.context_disconnected_attrs(
             grp_inn_attrs, hold_inputs=True, hold_outputs=False

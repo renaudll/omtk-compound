@@ -131,24 +131,29 @@ def _expose_attribute_mel(
 
 
 def hold_connections(
-    attrs: list[pymel.Attribute], hold_inputs: bool = True, hold_outputs: bool = True
-) -> list[tuple[pymel.Attribute, str]]:
+    attrs: list[str], hold_inputs: bool = True, hold_outputs: bool = True
+) -> list[tuple[str, str]]:
     result = []
     for attr in attrs:
         if hold_inputs:
-            attr_src = next(iter(attr.inputs(plugs=True)), None)
-            if attr_src:
-                pymel.disconnectAttr(attr_src, attr)
+            # Get the source attribute connected to this attribute
+            connections = cmds.listConnections(attr, source=True, destination=False, plugs=True)
+            if connections:
+                attr_src = connections[0]
+                cmds.disconnectAttr(attr_src, attr)
                 result.append((attr_src, attr))
         if hold_outputs:
-            for attr_dst in attr.outputs(plugs=True):
-                pymel.disconnectAttr(attr, attr_dst)
-                result.append((attr, attr_dst))
+            # Get all destination attributes connected to this attribute
+            connections = cmds.listConnections(attr, source=False, destination=True, plugs=True)
+            if connections:
+                for attr_dst in connections:
+                    cmds.disconnectAttr(attr, attr_dst)
+                    result.append((attr, attr_dst))
 
     return result
 
 
-def fetch_connections(data: list[tuple[pymel.Attribute, str]]) -> None:
+def fetch_connections(data: list[tuple[str, str]]) -> None:
     for attr_src, attr_dst in data:
         pymel.connectAttr(attr_src, attr_dst)
 

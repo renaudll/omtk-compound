@@ -58,6 +58,7 @@ def create_from_nodes(
                         outside the nodes boundaries?
     :return: A compound object
     """
+    # TODO: Remove pymel dependency
     # Conform objs to pynodes
     objs = [pymel.PyNode(obj) for obj in objs]
 
@@ -85,6 +86,7 @@ def create_from_nodes(
     inst = _create(namespace)
 
     if expose:
+        objs = [str(obj) for obj in objs]  # list[PyNode] -> list[str]
         inputs, outputs = _get_attributes_map_from_nodes(objs)
         _expose_attributes(inst, inputs, outputs)
 
