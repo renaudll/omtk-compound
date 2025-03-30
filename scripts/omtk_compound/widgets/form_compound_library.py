@@ -2,7 +2,7 @@
 Window that show the available registered compounds.
 """
 
-from omtk_compound.vendor.Qt import QtWidgets
+from omtk_compound.vendor.Qt import QtCore, QtWidgets
 from omtk_compound.core._factory import from_file
 from omtk_compound import manager
 from omtk_compound.models import CompoundRegistryModel, DataRole
@@ -15,9 +15,8 @@ class FormCompoundLibrary(QtWidgets.QMainWindow):
     Window that show the available registered compounds.
     """
 
-    def __init__(self):
-        super(FormCompoundLibrary, self).__init__()
-
+    def __init__(self) -> None:
+        super().__init__()
         self.ui = ui_def.Ui_MainWindow()
         self.ui.setupUi(self)
 
@@ -32,14 +31,14 @@ class FormCompoundLibrary(QtWidgets.QMainWindow):
 
         self.update_enabled()
 
-    def update_enabled(self, *_):
+    def update_enabled(self, *_) -> None:
         """
         Update the status of the "create" button.
         """
         text = self.ui.lineEdit_create_namespace.text()
         self.ui.pushButton_create.setEnabled(bool(text))
 
-    def on_submit(self):
+    def on_submit(self) -> None:
         """
         Called when the user submit is request to create a Compound.
         """
@@ -47,11 +46,10 @@ class FormCompoundLibrary(QtWidgets.QMainWindow):
         name = self.ui.lineEdit_create_namespace.text()
         from_file(sel.path, namespace=name)
 
-    def on_selection_changed(self, selected, _):
+    def on_selection_changed(self, selected: QtCore.QItemSelection, _) -> None:
         """
         Called when the user select a component
         :param selected: Selected items
-        :type selected: QtCore.QItemSelection
         """
         if selected.empty():
             return
@@ -59,21 +57,19 @@ class FormCompoundLibrary(QtWidgets.QMainWindow):
         compound_def = self.get_selected_compound_def()
 
         text = (
-            "Name: {name}\n"
-            "Version: {version}\n"
-            "Author: {author}\n"
-            "Description: {description}\n"
-        ).format(**compound_def)
+            f"Name: {compound_def['name']}\n"
+            f"Version: {compound_def['version']}\n"
+            f"Author: {compound_def['author']}\n"
+            f"Description: {compound_def['description']}\n"
+        )
 
         self.ui.plainTextEdit_details.setPlainText(text)
 
-    def get_selected_compound_def(self):
+    def get_selected_compound_def(self) -> manager.CompoundDefinition:
         """
-        :param selected: QSelection
-        :return:
-        :rtype: omtk_compound.CompoundDefinition
+        Get the selected compound definition.
         """
         selected = self.ui.tableView_compounds.selectedIndexes()
         index = next((index for index in selected))
-        compound_def = self.compound_model.data(index, DataRole)  # type: omtk_compound.CompoundDefinition
+        compound_def = self.compound_model.data(index, DataRole)
         return compound_def

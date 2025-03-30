@@ -5,6 +5,7 @@ This is part of UI experimentation and might disappear eventually.
 
 import logging
 
+from ..core import CompoundDefinition, Manager
 from omtk_compound.core._factory import from_scene, from_file
 from omtk_compound.vendor.Qt import QtWidgets
 from omtk_compound.widgets.ui import form_compound_manager as ui_def
@@ -22,12 +23,11 @@ class FormCompoundManager(QtWidgets.QMainWindow):
     A form that contain multiple compound related widgets.
     """
 
-    def __init__(self, manager):
+    def __init__(self, manager: Manager):
         """
-        :param omtk_compound.Manager manager: A manager instance
+        :param manager: A manager instance
         """
-        super(FormCompoundManager, self).__init__()
-
+        super().__init__()
         self.ui = ui_def.Ui_MainWindow()
         self.ui.setupUi(self)
 
@@ -47,14 +47,14 @@ class FormCompoundManager(QtWidgets.QMainWindow):
         self.ui.pushButton.pressed.connect(self.show_create)
         self.ui.pushButton_2.pressed.connect(self.show_publisher)
 
-    def on_outliner_selection_changed(self, compounds):
+    def on_outliner_selection_changed(self, compounds) -> None:
         """
-        Called when the user change the selection in the outliner.
+        Called when the user changes the selection in the outliner.
         """
         compound = next(iter(compounds), None)
         self.ui.widget_editor.set_compound(compound)
 
-    def show_create(self):
+    def show_create(self) -> None:
         """
         Show a modal compound picker.
         """
@@ -65,15 +65,14 @@ class FormCompoundManager(QtWidgets.QMainWindow):
         _GUI_CREATE.show()
 
     @staticmethod
-    def on_show_create_picked(component_def):
+    def on_show_create_picked(component_def: CompoundDefinition) -> None:
         """
-        :param component_def: The compound definition to instanciante
-        :type component_def: omtk_compound.CompoundDefinition
+        :param component_def: The compound definition to instantiate
         """
         from_file(component_def.path)
 
     @staticmethod
-    def show_publisher():
+    def show_publisher() -> None:
         """
         Show the compound publisher.
         """

@@ -5,6 +5,7 @@ Registry hold all known compound definitions.
 import os
 from collections.abc import Mapping
 from collections import defaultdict
+from typing import Iterator, Tuple
 
 from ._definition import CompoundDefinition
 
@@ -24,51 +25,47 @@ class NotRegisteredError(RegistryError):
 class VersionStream(dict):
     """Extended dict."""
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key, value) -> None:
         if key in self:
-            raise AlreadyRegisteredError("%s is already registered" % value)
-        super(VersionStream, self).__setitem__(key, value)
+            raise AlreadyRegisteredError(f"{value} is already registered")
+        super().__setitem__(key, value)
 
     @property
-    def latest(self):
-        """
-        :return: The highest version available
-        :rtype: :class:`omtk_compound.core.CompoundDefinition`
-        """
+    def latest(self) -> CompoundDefinition:
+        """:return: The highest version available"""
         key = sorted(self.keys())[-1]
         return self[key]
 
 
-class Registry(object):
+class Registry:
     """A registry of compounds definitions."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._store = defaultdict(VersionStream)
 
-    def __iter__(self):  # TODO: Should return VersionStream
+    def __iter__(self) -> Iterator[Tuple[str, CompoundDefinition]]:
         for uid, versions in self._store.items():
             for version in versions:
                 yield uid, version
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(tuple(iter(self)))
 
-    def __getitem__(self, item):
+    def __getitem__(self, item: str) -> VersionStream:
         return self._store[item]
 
-    def __eq__(self, other):
-        # TODO: Refactor, should not use private symbol
+    def __eq__(self, other) -> bool:
         return tuple(self) == tuple(other)
 
-    def find(self, uid=None, name=None, version=None):
+    def find(
+        self, uid: str = None, name: str = None, version: int = None
+    ) -> CompoundDefinition:
         """
         Find a single compound definition.
 
-        :param str uid: Optional compound uid to search for.
-        :param str name: Optional compound name to search for.
-        :param int version: Optional compound version to search for. Default is latest.
-        :return: A Compound definition
-        :rtype: CompoundDefinition
+        :param uid: Optional compound uid to search for.
+        :param name: Optional compound name to search for.
+        :param version: Optional compound version to search for. Default is latest.
         :raises ValueError: If the requirements are invalid.
         :raises LookupError: If no compound definition is found.
         """
@@ -84,24 +81,23 @@ class Registry(object):
 
         raise LookupError("Found no compound matching requirements.")
 
-    def register(self, *entries):
+    def register(self, *entries: Mapping) -> None:
         """
         Register entries
 
         :param entries: The entries to register
-        :type entries: tuple of omtk_compound.core.CompoundDefinition
         :raises TypeError: If the provided value is not a valid mapping
         :raises AlreadyRegisteredError: If the provided entry is already registered
         """
         for entry in entries:
             if not isinstance(entry, Mapping):
                 raise TypeError(
-                    "Expected mapping, got %s: %s" % (type(entry).__name__, entry)
+                    f"Expected mapping, got {type(entry).__name__}: {entry}"
                 )
 
             self._store[entry.uid][entry.version] = entry
 
-    def unregister(self, entry):
+    def unregister(self, entry: CompoundDefinition) -> None:
         """Unregister an entry
 
         :param entry: The entry to unregister
@@ -110,9 +106,9 @@ class Registry(object):
         try:
             self._store[entry.uid].pop(entry.version)
         except KeyError:
-            raise NotRegisteredError("%s is not registered" % entry)
+            raise NotRegisteredError(f"{entry} is not registered")
 
-    def parse_directory(self, startdir):
+    def parse_directory(self, startdir: str) -> None:
         """Scan a directory and register any found definitions."""
         for rootdir, _, filenames in os.walk(startdir):
             for filename in filenames:

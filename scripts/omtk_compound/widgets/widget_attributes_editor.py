@@ -1,7 +1,3 @@
-"""
-QWidget that show a list of attributes and allow them to be renamed/reordered.
-"""
-
 from omtk_compound.vendor.Qt import QtCore, QtWidgets, QtCompat
 from omtk_compound.models import ModelAttributes
 
@@ -13,11 +9,11 @@ class AttributesEditorWidget(QtWidgets.QWidget):  # pylint: disable=too-few-publ
     QWidget that show a list of attributes and allow them to be renamed/reordered.
     """
 
-    def __init__(self, parent, data=None):
+    def __init__(self, parent, data: list[str] | None = None) -> None:
         """
         :param omtk_compound.Compound compound: The compound to publish
         """
-        super(AttributesEditorWidget, self).__init__(parent)
+        super().__init__(parent)
 
         self.ui = ui_def.Ui_Form()
         self.ui.setupUi(self)
@@ -49,17 +45,16 @@ class AttributesEditorWidget(QtWidgets.QWidget):  # pylint: disable=too-few-publ
         # Connect events
         self.ui.lineEdit_search.textEdited.connect(self._on_search_changed)
 
-    def set_data(self, data):  # type: (list[str]) -> None
+    def set_data(self, data: list[str]) -> None:
         """
         Set model internal data
 
         :param data: Attributes to display
-        :type data: list[str]
         """
         self.model.set_data(data)
         self.ui.treeView.expandAll()
 
-    def _on_search_changed(self, text):  # (type: str) -> None
+    def _on_search_changed(self, text: str) -> None:
         """
         Called when the user change the search query.
 

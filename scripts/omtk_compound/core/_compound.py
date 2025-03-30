@@ -1,12 +1,11 @@
 """
-A Compound represent encapsulation in Maya
+A Compound represents encapsulation in Maya
 via a namespace and an input and output attribute holder networks.
 """
 
 import ast
 import logging
-import six
-
+from typing import Generator
 from maya import cmds
 import pymel.core as pymel
 
@@ -25,15 +24,15 @@ class CompoundValidationError(CompoundError):
     """Exception raised when a compound object is invalid"""
 
 
-class Compound(object):  # pylint: disable=too-many-public-methods
+class Compound:
     """An instance of a network of Maya nodes that represent encapsulation.
-    It share a common namespace and have an input and output networks.
+    It shares a common namespace and has input and output networks.
     """
 
-    def __init__(self, namespace):
+    def __init__(self, namespace: str):
         """
-        :param str namespace: A namespace
-        :raises CompoundValidationError: If the namespace don't contain a valid compound
+        :param namespace: A namespace
+        :raises CompoundValidationError: If the namespace doesn't contain a valid compound
         """
         self._inputs = {}
         self._outputs = {}
@@ -43,93 +42,85 @@ class Compound(object):  # pylint: disable=too-many-public-methods
 
         self.validate()
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "<Compound %r>" % self.dagpath
 
-    def __len__(self):
+    def __len__(self) -> int:
         """The number of nodes inside the compound."""
         return len(self.nodes)
 
-    def __iter__(self):
+    def __iter__(self) -> Generator[str, None, None]:
         """
         :return: An iterator that yield the compound nodes dagpaths
-        :rtype: generator(str)
         """
         return self.iter()
 
-    def __melobject__(self):
-        """The dagpath of a compound is it's namespace.
+    def __melobject__(self) -> str:
+        """The dagpath of a compound is its namespace.
 
-        :return: The compound namespace, ex: `namespace`
-        :rtype: str
+        :return: The compound namespace, ex: 'namespace'
         """
         return self.dagpath
 
     @property
-    def nodes(self):
+    def nodes(self) -> list[str]:
         """
         :return: The dagpath of all the nodes under the compound.
-        :rtype: list of str
         """
         return cmds.ls("%s:*" % self.namespace)
 
     @property
-    def input(self):
+    def input(self) -> str:
         """
         :return: The dagpath of the node containing the input attributes.
-        :rtype: str
         """
         return ":".join((self.namespace, INPUT_NODE_NAME))
 
     @property
-    def output(self):
+    def output(self) -> str:
         """
         :return: The dagpath of the node containing the output attributes.
-        :rtype: str
         """
         return ":".join((self.namespace, OUTPUT_NODE_NAME))
 
     @property
-    def inputs(self):
+    def inputs(self) -> list[str]:
         """
         :return: A list of the compound inputs attributes as dagpath
-        :rtype: list(str)
         """
         attr_names = cmds.listAttr(self.input, userDefined=True) or []
         prefix = self.input + "."
         return [prefix + attr_name for attr_name in attr_names]
 
     @property
-    def outputs(self):
+    def outputs(self) -> list[str]:
         """
         :return: A list of the compound input attributes as dagpath
-        :rtype: list(str)
         """
         attr_names = cmds.listAttr(self.output, userDefined=True) or []
         prefix = self.output + "."
         return [prefix + attr_name for attr_name in attr_names]
 
-    def validate(self):
+    def validate(self) -> None:
         """Validate the compound. Raise an exception in case of failure.
 
-        :raises CompoundValidationError: If the compound don't validate.
+        :raises CompoundValidationError: If the compound doesn't validate.
         """
         if self.namespace in ("UI",):
             raise CompoundValidationError(
                 "Namespace %s is blacklisted." % (self.namespace)
             )
         if not cmds.objExists(self.input):
-            raise CompoundValidationError("%r don't exist." % self.input)
+            raise CompoundValidationError("%r doesn't exist." % self.input)
         if not cmds.objExists(self.output):
-            raise CompoundValidationError("%r don't exist." % self.output)
+            raise CompoundValidationError("%r doesn't exist." % self.output)
 
-    def get_metadata(self):
+    def get_metadata(self) -> dict:
         """A compound can have associated metadata.
-        This generally mean an ID, a name and a version, but it's all arbitrary.
+        This generally means an ID, a name, and a version, but it's all arbitrary.
         The metadata is stored in the input node.
 
         :return: A metadata dict
-        :rtype: dict
         """
         attr = "%s.notes" % self.input
         if not cmds.objExists(attr):
@@ -145,10 +136,10 @@ class Compound(object):  # pylint: disable=too-many-public-methods
             metadata[key] = ast.literal_eval(val)
         return metadata
 
-    def set_metadata(self, metadata):
+    def set_metadata(self, metadata: dict):
         """Set the metadata stored in the compound as an attribute.
 
-        :param dict metadata: The new metadata to set
+        :param metadata: The new metadata to set
         """
         attr = "%s.notes" % self.input
 
@@ -165,23 +156,17 @@ class Compound(object):  # pylint: disable=too-many-public-methods
 
         lines = []
         for key, val in metadata.items():
-            val = (
-                str(val) if isinstance(val, six.string_types) else val
-            )  # convert unicode to native string
+            val = str(val) if isinstance(val, str) else val
             lines.append("%s:%r" % (key, val))
         metadata_str = "\n".join(lines)
 
         cmds.setAttr(attr, metadata_str, type="string")
 
-    def iter(self):
-        """Iterate through nodes in the graph.
-
-        :rtype: Generator[str]
-        """
-        # TODO: Implement recursive kwarg?
+    def iter(self) -> Generator[str, None, None]:
+        """Iterate through nodes in the graph."""
         return iter(self.nodes)
 
-    def export(self, path):
+    def export(self, path: str):
         """Export the compound to a file."""
 
         objs = tuple(self)
@@ -218,14 +203,14 @@ class Compound(object):  # pylint: disable=too-many-public-methods
                 cmds.file(rename=current_path)
 
     def delete(self):
-        """Delete the content of a compound and it's associated namespace(s)."""
+        """Delete the content of a compound and its associated namespace(s)."""
         cmds.namespace(removeNamespace=self.namespace, deleteNamespaceContent=True)
 
     def optimize(self):
         """
-        Implement optimisation routines. Call before publishing rig to animation.
+        Implement optimization routines. Call before publishing rig to animation.
 
-        There's multiple things that can be done here, here's some idea:
+        There's multiple things that can be done here
         - Remove the inn and out hub.
         - Remove decomposeMatrix connected to composeMatrix
         - Remove composeMatrix connected to decomposeMatrix
@@ -238,54 +223,48 @@ class Compound(object):  # pylint: disable=too-many-public-methods
 
     # --- Interface management ---
 
-    def add_input_attr(self, long_name, **kwargs):
-        """Wrapper around `cmds.addAttr` that create an input attribute.
+    def add_input_attr(self, long_name: str, **kwargs):
+        """Wrapper around `cmds.addAttr` that creates an input attribute.
 
-        :param str long_name: Name of the attribute to create.
-        :param dict kwargs: Keyword arguments are forwarded to `cmds.addAttr`
+        :param long_name: Name of the attribute to create.
+        :param kwargs: Keyword arguments are forwarded to `cmds.addAttr`
         """
-        # TODO: Return the new attribute dagpath?
         cmds.addAttr(self.input, longName=long_name, **kwargs)
 
-    def add_output_attr(self, long_name, **kwargs):
-        """Wrapper around `cmds.addAttr` that create an output attribute.
+    def add_output_attr(self, long_name: str, **kwargs):
+        """Wrapper around `cmds.addAttr` that creates an output attribute.
 
-        :param str long_name: Name of the attribute to create.
-        :param dict kwargs: Keyword arguments are forwarded to `cmds.addAttr`
+        :param long_name: Name of the attribute to create.
+        :param kwargs: Keyword arguments are forwarded to `cmds.addAttr`
         """
-        # TODO: Return the new attribute dagpath?
         cmds.addAttr(self.output, longName=long_name, **kwargs)
 
-    def has_input_attr(self, attr_name):
-        """Check if a provided input attribute exist.
+    def has_input_attr(self, attr_name: str) -> bool:
+        """Check if a provided input attribute exists.
 
-        :param str attr_name: An attribute name
+        :param attr_name: An attribute name
         :return: Does the attribute exist?
-        :rtype: bool
         """
         return cmds.objExists("%s.%s" % (self.input, attr_name))
 
-    def has_output_attr(self, attr_name):
-        """Check if a provided output attribute exist.
+    def has_output_attr(self, attr_name: str) -> bool:
+        """Check if a provided output attribute exists.
 
-        :param str attr_name: An attribute name
+        :param attr_name: An attribute name
         :return: Does the attribute exist?
-        :rtype: bool
         """
         return cmds.objExists("%s.%s" % (self.output, attr_name))
 
-    def expose_input_attr(self, dagpath):
+    def expose_input_attr(self, dagpath: str) -> str:
         """Expose an attribute as an input attribute of the compound.
 
-        :param str dagpath: The attribute to expose
+        :param dagpath: The attribute to expose
         :return: The dagpath of the exposed attribute
         :raises: ValueError: If the attribute is already a connection destination
         """
-        # TODO: Remove pymel usage
         attr = pymel.Attribute(dagpath)
         dagpath = str(attr)
 
-        # TODO: Solidify array element support with appropriate tests
         attr = attr.array() if attr.isElement() else attr
         if not cmds.attributeQuery(
             attr.longName(), node=str(attr.node()), writable=True
@@ -297,15 +276,11 @@ class Compound(object):  # pylint: disable=too-many-public-methods
         if cmds.connectionInfo(dagpath, isDestination=True):
             raise ValueError("Cannot expose a destination attribute: %r" % dagpath)
 
-        # TODO: Manage name collision
         src_node = str(attr.node())
         src_dagpath = _utils_attr.expose_attribute(
             src_node, self.input, attr.longName()
         )
 
-        # Our reference attribute might not be "readable"
-        # (a possible connection destination).
-        # TODO: Don't use pymel?
         mattr = pymel.Attribute(src_dagpath).__apimattr__()
         mattr.setReadable(True)
 
@@ -313,19 +288,17 @@ class Compound(object):  # pylint: disable=too-many-public-methods
 
         return src_dagpath
 
-    def expose_output_attr(self, dagpath):
+    def expose_output_attr(self, dagpath: str) -> str:
         """
         Expose an attribute as an output attribute of the compound.
 
-        :param str dagpath: The attribute to expose
+        :param dagpath: The attribute to expose
         :return: The dagpath of the exposed attribute
         :raises: ValueError: If the attribute is the source of an existing connection.
         """
-        # TODO: Remove pymel usage
         attr = pymel.Attribute(dagpath)
         dagpath = str(attr)
 
-        # TODO: Solidify array element support with appropriate tests
         attr_to_check = attr.array() if attr.isElement() else attr
         if not cmds.attributeQuery(
             attr_to_check.longName(), node=str(attr.node()), readable=True
@@ -337,13 +310,10 @@ class Compound(object):  # pylint: disable=too-many-public-methods
         if cmds.connectionInfo(dagpath, isSource=True):
             raise ValueError("Cannot expose a source attribute: %r" % dagpath)
 
-        # TODO: Manage name collision
         src_node = str(attr.node())
         attr_name = str(attr.longName())
         dst_dagpath = _utils_attr.expose_attribute(src_node, self.output, attr_name)
 
-        # Our reference attribute might not be "writable"
-        # (a possible connection source)
         mattr = pymel.Attribute(dst_dagpath).__apimattr__()
         mattr.setWritable(True)
 
@@ -351,18 +321,16 @@ class Compound(object):  # pylint: disable=too-many-public-methods
 
         return dst_dagpath
 
-    def explode(self, remove_namespace=False):
+    def explode(self, remove_namespace: bool = False):
         """
-        Delete the compound and it's hub,
+        Delete the compound and its hub,
         remapping the attribute to their original location.
 
-        :param bool remove_namespace: Should we remove the compound namespace?
+        :param remove_namespace: Should we remove the compound namespace?
         """
 
         def _remap_attr(attr_):
-            attr_ = (
-                pymel.Attribute(attr_) if isinstance(attr_, str) else None
-            )  # conform
+            attr_ = pymel.Attribute(attr_) if isinstance(attr_, str) else None
             attr_src = next(iter(attr_.inputs(plugs=True)), None)
             if attr_src:
                 pymel.disconnectAttr(attr_src, attr_)
@@ -371,31 +339,25 @@ class Compound(object):  # pylint: disable=too-many-public-methods
                 if attr_src:
                     pymel.connectAttr(attr_src, attr_dst, force=True)
 
-        # Redirection input and outputs connections
         for attr in self.inputs:
             _remap_attr(attr)
         for attr in self.outputs:
             _remap_attr(attr)
 
-        # Delete input and output nodes
         cmds.delete(self.input)
         cmds.delete(self.output)
 
-        # Remove namespace if asked
         if remove_namespace:
             cmds.namespace(
                 mergeNamespaceWithParent=True, removeNamespace=self.namespace
             )
 
-    def get_connections(self):
+    def get_connections(self) -> tuple[dict[str, list[str]], dict[str, list[str]]]:
         """
         Return two dict(k,v) describing what is connected to the compound.
-        This help with updating/promoting compound.
-        :rtype: tuple(dict, dict)
+        This helps with updating/promoting compound.
         """
 
-        # TODO: Remove pymel usage
-        # TODO: Cleanup
         def _conform(attr_):
             return str(attr_)
 
@@ -409,14 +371,12 @@ class Compound(object):  # pylint: disable=too-many-public-methods
                 map_out[_conform(attr)] = list(map(_conform, attr.outputs(plugs=True)))
         return map_inn, map_out
 
-    def hold_connections(self):
+    def hold_connections(self) -> tuple[dict[str, list[str]], dict[str, list[str]]]:
         """
         Disconnect the compound input and output connections.
 
         :return: The disconnected inputs and outputs connections.
-        :rtype: tuple(dict, dict)
         """
-        # TODO: Remove pymel usage
         map_inn, map_out = self.get_connections()
 
         for attr_dst, attr_srcs in map_inn.items():
@@ -430,14 +390,12 @@ class Compound(object):  # pylint: disable=too-many-public-methods
         return map_inn, map_out
 
     @staticmethod
-    def fetch_connections(map_inn, map_out):
+    def fetch_connections(map_inn: dict[str, list[str]], map_out: dict[str, list[str]]):
         """
         Reconnect the compound input and output connections.
 
         :param map_inn: Input connection to create
-        :type map_inn: dict[str, str]
         :param map_out: Output connections to create
-        :type map_out: dict[str, str]
         """
         for attr_dst, attr_srcs in map_inn.items():
             for attr_src in attr_srcs:
@@ -447,13 +405,12 @@ class Compound(object):  # pylint: disable=too-many-public-methods
             for attr_dst in attr_dsts:
                 cmds.connectAttr(attr_src, attr_dst)
 
-    def rename(self, namespace):
+    def rename(self, namespace: str):
         """
         Change the compound namespace.
 
-        :param str namespace: The new namespace to use
+        :param namespace: The new namespace to use
         """
-        # TODO: Rename sub compounds?
         old_namespace = self.namespace
         new_namespace = _utils_namespace.get_unique_namespace(namespace)
         cmds.namespace(addNamespace=new_namespace)
@@ -461,12 +418,11 @@ class Compound(object):  # pylint: disable=too-many-public-methods
         cmds.namespace(removeNamespace=old_namespace)
         self.namespace = new_namespace
 
-    def generate_docstring(self):
+    def generate_docstring(self) -> str:
         """
         Generate a description from the compound interface.
 
         :return: A description
-        :rtype: str
         """
         result = ""
         result += "Inputs:\n"

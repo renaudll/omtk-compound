@@ -17,19 +17,19 @@ from omtk_compound.core import (
 
 
 @pytest.fixture
-def registry():
+def registry() -> Registry:
     """Fixture for a preconfigured registry"""
     return Registry()
 
 
 @pytest.fixture
-def preferences(tmpdir):
+def preferences(tmpdir) -> Preferences:
     """Fixture for a preconfigured preference"""
     return Preferences(compound_location=str(tmpdir))
 
 
 @pytest.fixture
-def manager(registry, preferences):
+def manager(registry: Registry, preferences: Preferences) -> Manager:
     """Fixture for a preconfigured manager"""
     return Manager(registry=registry, preferences=preferences)
 
@@ -47,8 +47,6 @@ def test_integration_1(manager):
     def _test_compound_v1():
         """
         Validate the namespace actually contain v1 of our test compound.
-
-        :param str namespace: The compound namespace
         """
         # Validate internal connections
         for src, dst in (
@@ -105,7 +103,7 @@ def test_integration_1(manager):
 
     _test_compound_v1()
 
-    # Register the compound?
+    # Register the compound
     compound_def_1 = CompoundDefinition(
         name="compound_name", version="1.0.0", uid="compound_uid"
     )
@@ -116,8 +114,6 @@ def test_integration_1(manager):
     compound.expose_output_attr(mult1.outputY)
 
     _test_compound_v2()
-
-    # TODO: Error if the file does not end with .ma?
 
     compound_def_2 = CompoundDefinition(
         name="compound_name", version="1.0.1", uid="compound_uid"

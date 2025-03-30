@@ -3,22 +3,25 @@
 import itertools
 import re
 from contextlib import contextmanager
+from typing import Generator, Iterable, Sequence, Any
+
 import pymel.core as pymel
 
-_REGEX_GROUP_PREFIX = re.compile("(.*[^0-9]+)([0-9]*)$")
+
+_REGEX_GROUP_PREFIX = re.compile(r"(.*[^0-9]+)([0-9]*)$")
 
 
-def get_unique_key(name, all_names, naming_format="{0}{1}", start=1):
+def get_unique_key(
+    name: str, all_names: Sequence[str], naming_format: str = "{0}{1}", start: int = 1
+) -> str:
     """
-
     >>> get_unique_key('v1', ['v1', 'v2'])
     'v3'
     >>> get_unique_key('v', ['v', 'v1', 'v2'])
     'v3'
 
-    :param str name: A start value
+    :param name: A start value
     :param all_names: A sequence of existing values
-    :type all_names: Sequence[str]
     :param naming_format:
     :param start:
     :return:
@@ -37,13 +40,12 @@ def get_unique_key(name, all_names, naming_format="{0}{1}", start=1):
             return new_name
 
 
-def pairwise(iterable):
+def pairwise(iterable: Iterable) -> Generator[tuple[Any, Any], None, None]:
     """Consume an iterable by yielded two values at the time.
     Recipe from: https://docs.python.org/2/library/itertools.html
 
-    :param Iterable iterable: An iterable
+    :param iterable: An iterable
     :return: A generator that yield two values at once
-    :rtype: Generator[object, object]
     """
     iter_a, iter_b = itertools.tee(iterable)
     next(iter_b, None)
@@ -51,11 +53,10 @@ def pairwise(iterable):
 
 
 @contextmanager
-def preserve_selection():
+def preserve_selection() -> Generator[None, None, None]:
     """Context that preserve the current selection.
 
     :return: A context
-    :rtype: Generator
     """
     sel = pymel.selected()
     yield

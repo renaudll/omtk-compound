@@ -7,7 +7,6 @@ from maya import cmds
 from omtk_compound.vendor.Qt import QtWidgets
 from omtk_compound.widgets.ui import form_add_attribute as ui_def
 
-
 _LOG = logging.getLogger(__name__)
 
 # maya known attr type names
@@ -64,8 +63,7 @@ class FormCreateAttribute(QtWidgets.QMainWindow):
     """
 
     def __init__(self):
-        super(FormCreateAttribute, self).__init__()
-
+        super().__init__()
         self.ui = ui_def.Ui_MainWindow()
         self.ui.setupUi(self)
 
@@ -74,12 +72,8 @@ class FormCreateAttribute(QtWidgets.QMainWindow):
 
         self.ui.pushButton.pressed.connect(self.on_submit)
 
-    def get_attr_type(self):
-        """Return the attribute type to create
-
-        :return: An attribute type (ex: "string")
-        :rtype: str
-        """
+    def get_attr_type(self) -> str:
+        """Return the attribute type to create"""
         if self.ui.rb_float.isChecked():
             return _TYPE_FLOAT
         if self.ui.rb_integer.isChecked():
@@ -95,23 +89,17 @@ class FormCreateAttribute(QtWidgets.QMainWindow):
         raise Exception("No attribute type provided")
 
     @staticmethod
-    def add_attribute(obj, name, type_, value):
-        """Add an attribute
-
-        :param str obj: Dagpath of the attribute holder
-        :param str name: Attribute name
-        :param str type_: Attribute type
-        :param str value: Attribute value
-        """
-        kwargs = _KWARG_MAP[type_]  # todo: create method?
+    def add_attribute(obj: str, name: str, type_: str, value: str) -> None:
+        """Add an attribute"""
+        kwargs = _KWARG_MAP[type_]
         kwargs["longName"] = name
-        _LOG.info("Adding attribute %r on %r: %r", name, obj, kwargs)
+        _LOG.info(f"Adding attribute {name!r} on {obj!r}: {kwargs!r}")
         cmds.addAttr(obj, **kwargs)
-        attr = "%s.%s" % (obj, name)
+        attr = f"{obj}.{name}"
         if value:
             cmds.setAttr(attr, value, type=type_)
 
-    def on_submit(self):
+    def on_submit(self) -> None:
         """Called when the user pressed submit."""
         name = self.ui.lineEdit_name.text()
         type_ = self.get_attr_type()

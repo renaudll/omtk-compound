@@ -310,7 +310,7 @@ def test_from_namespace_missing_input():
     with pytest.raises(CompoundValidationError) as error:
         from_namespace("a")
 
-    assert str(error.value) == "'a:outputs' don't exist."
+    assert str(error.value) == "'a:outputs' doesn't exist."
 
 
 def test_from_namespace_missing_output():
@@ -324,4 +324,4 @@ def test_from_namespace_missing_output():
     with pytest.raises(CompoundValidationError) as error:
         from_namespace("a")
 
-    assert str(error.value) == "'a:inputs' don't exist."
+    assert str(error.value) == "'a:inputs' doesn't exist."

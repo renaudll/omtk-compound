@@ -16,19 +16,18 @@ class CompoundRegistryModel(BaseTableModel):
     _COLUMNS = ("name", "version", "author")
     compoundChoosed = QtCore.Signal(CompoundDefinition)
 
-    def __init__(self, registry):
+    def __init__(self, registry) -> None:
         """
-        :param Registry registry: A compound registry
+        :param registry: A compound registry
         """
         entries = sorted([registry[uid][version] for uid, version in registry])
-        super(CompoundRegistryModel, self).__init__(entries)
+        super().__init__(entries)
         self.registry = registry
 
-    def data(self, index, role):
+    def data(self, index: QtCore.QModelIndex, role: int) -> str | None:
         """
         :param index: The data index
-        :type index: QtCore.QModelIndex
-        :param int role: A Qt role
+        :param role: A Qt role
         :return:
         """
         if role == QtCore.Qt.DisplayRole:

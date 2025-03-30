@@ -14,21 +14,18 @@ class CompoundManagerModel(BaseTableModel):
 
     _COLUMNS = ["namespace", "type", "version", "status"]
 
-    def __init__(self, manager, entries=None):
+    def __init__(self, manager, entries: list | None = None):
         """
         :param manager: A manager
-        :type manage: omtk_compound.Manager
         :param entries: An optional list of compounds to display
-        :type entries: list[omtk_compound.Compound]
         """
-        super(CompoundManagerModel, self).__init__(entries)
+        super().__init__(entries)
         self.manager = manager
 
-    def _get_compound_status(self, compound):
+    def _get_compound_status(self, compound) -> str:
         """
-        :param omtk_compound.Compound compound: A compound
+        :param compound: A compound
         :return: A status
-        :rtype: str
         """
         # TODO: Move elsewhere
         metadata = compound.get_metadata()
@@ -45,25 +42,22 @@ class CompoundManagerModel(BaseTableModel):
 
         return "outdated"
 
-    def _update(self, entries):
+    def _update(self, entries: list) -> None:
         """
         Update internal model data.
 
         :param entries: New compounds
-        :type entries: list[omtk_compound.Compound]
         """
-        super(CompoundManagerModel, self)._update(entries)
+        super()._update(entries)
         self.statuses = [self._get_compound_status(entry) for entry in entries]
 
-    def data(self, index, role):
+    def data(self, index: QtCore.QModelIndex, role: int):
         """
         Re-implement QtCore.QAbstractTableModel.data
 
         :param index: The data index
-        :type index: QtCore.QModelIndex
-        :param int role: A Qt role
+        :param role: A Qt role
         :return:
-        :rtype: str or None
         """
         if role == QtCore.Qt.DisplayRole:
             row = index.row()

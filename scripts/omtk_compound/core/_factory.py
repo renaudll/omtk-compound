@@ -3,6 +3,7 @@ Factory providing compound instances.
 """
 
 import logging
+from typing import Generator
 
 import pymel.core as pymel
 from maya import cmds
@@ -19,13 +20,12 @@ from . import _utils_namespace
 _LOG = logging.getLogger(__name__)
 
 
-def create_empty(namespace=COMPOUND_DEFAULT_NAMESPACE):
+def create_empty(namespace: str = COMPOUND_DEFAULT_NAMESPACE) -> Compound:
     """
     Create a compound from nothing.
 
     :param str namespace: The desired namespace for the new compound.
     :return: A ``Compound`` instance.
-    :rtype: Compound
     """
     namespace = _utils_namespace.get_unique_namespace(namespace)
 
@@ -44,7 +44,9 @@ def create_empty(namespace=COMPOUND_DEFAULT_NAMESPACE):
     return Compound(namespace)
 
 
-def create_from_nodes(objs, namespace=COMPOUND_DEFAULT_NAMESPACE, expose=False):
+def create_from_nodes(
+    objs: list[str], namespace: str = COMPOUND_DEFAULT_NAMESPACE, expose: bool = False
+) -> Compound:
     """
     Create a compound from a set of nodes.
     This will move the nodes inside of a namespace.
@@ -55,7 +57,6 @@ def create_from_nodes(objs, namespace=COMPOUND_DEFAULT_NAMESPACE, expose=False):
     :param bool expose: Should we expose attributes from connection
                         outside the nodes boundaries?
     :return: A compound object
-    :rtype: Compound
     """
     # Conform objs to pynodes
     objs = [pymel.PyNode(obj) for obj in objs]
@@ -90,7 +91,7 @@ def create_from_nodes(objs, namespace=COMPOUND_DEFAULT_NAMESPACE, expose=False):
     return Compound(namespace)
 
 
-def from_namespace(namespace):
+def from_namespace(namespace: str) -> Compound:
     """
     Create a compound instance from a namespace.
 
@@ -109,12 +110,11 @@ def from_namespace(namespace):
     return inst
 
 
-def from_scene():
+def from_scene() -> Generator[Compound, None, None]:
     """
     Return all compound in the scene.
 
     :return: A compound generator
-    :rtype: Generator[omtk_compound.Compound]
     """
     cmds.namespace(setNamespace=":")
     namespaces = cmds.namespaceInfo(listOnlyNamespaces=True, recurse=True)
@@ -126,20 +126,20 @@ def from_scene():
 
 
 def from_attributes(
-    attrs_inn, attrs_out, dagnodes=None, namespace=COMPOUND_DEFAULT_NAMESPACE
-):
+    attrs_inn: list[str],
+    attrs_out: list[str],
+    dagnodes: list[str] | None = None,
+    namespace: str = COMPOUND_DEFAULT_NAMESPACE,
+) -> Compound:
     """
     Create a compound from a set of provided input and output attributes.
     The network node will be automatically determined.
 
     :param attrs_inn:
-    :type attrs_inn: list(str)
     :param List[pymel.Attribute] attrs_out:
-    :type attrs_out: list(str)
     :param List[pymel.PyNode] dagnodes:
     :param str namespace:
     :return: A compound
-    :rtype: Compound
     """
     # TODO: Remove pymel usage
     # Conform dagnodes to set
@@ -158,14 +158,13 @@ def from_attributes(
     return inst
 
 
-def from_file(path, namespace=COMPOUND_DEFAULT_NAMESPACE):
+def from_file(path: str, namespace: str = COMPOUND_DEFAULT_NAMESPACE) -> Compound:
     """
     Create a compound in the scene from a CompoundDefinition.
 
     :param str path: Path to a maya ascii file (.ma) to load.
     :param str namespace: The namespace to use for the compound.
     :return: A compound instance.
-    :rtype: omtk_compound.core.Compound
     """
     namespace = _utils_namespace.get_unique_namespace(namespace)
     _LOG.info("Creating compound with namespace: %s", namespace)
@@ -173,13 +172,12 @@ def from_file(path, namespace=COMPOUND_DEFAULT_NAMESPACE):
     return from_namespace(namespace)
 
 
-def _create(namespace):
+def _create(namespace: str) -> Compound:
     """
     Create a new compound from a provided namespace.
 
     :param namespace: The compound namespace
     :return: A compound instance
-    :rtype: Compound
     """
     hub_inn_dagpath = "{0}:{1}".format(namespace, INPUT_NODE_NAME)
     if not cmds.objExists(hub_inn_dagpath):
@@ -192,7 +190,7 @@ def _create(namespace):
     return Compound(namespace)
 
 
-def _expose_attributes(inst, inputs, outputs):
+def _expose_attributes(inst: Compound, inputs: list[str], outputs: list[str]):
     """
     Expose a compound attributes.
 
@@ -233,7 +231,7 @@ def _expose_attributes(inst, inputs, outputs):
             cmds.connectAttr(exposed_src_attr, dst_attr)
 
 
-def _get_nodes_from_attributes(inputs, outputs):
+def _get_nodes_from_attributes(inputs: list[str], outputs: list[str]) -> set:
     """
     Determine the common history between attributes
     that would be used to create a compound.
@@ -254,13 +252,12 @@ def _get_nodes_from_attributes(inputs, outputs):
     return hist_inn & hist_out
 
 
-def _get_attributes_map_from_nodes(nodes):
+def _get_attributes_map_from_nodes(nodes: list[str]) -> tuple[set, set]:
     """
     Determine the attribute to expose from a set of node.
 
     :param list[str] nodes: A list of nodes
     :return: The inputs attributes and output attributes
-    :rtype: tuple[list[str], list[str]]
     """
     # TODO: Ignore attributes that point back to the network.
 
@@ -304,14 +301,13 @@ def _get_attributes_map_from_nodes(nodes):
     return inputs, outputs
 
 
-def _hold_input_attributes(attr):
+def _hold_input_attributes(attr: str) -> list[str]:
     """
     Find all connections to a provided attribute, remove them,
     and return the source attributes.
 
     :param str attr: A destination attribute
     :return: A list of source attribute
-    :rtype: list[str]
     """
     inputs = cmds.listConnections(attr, destination=False, plugs=True) or []
     for input_ in inputs:
@@ -319,14 +315,13 @@ def _hold_input_attributes(attr):
     return inputs
 
 
-def _hold_output_attributes(attr):
+def _hold_output_attributes(attr: str) -> list[str]:
     """
     Find all connections from a provided attribute, remote them,
     and return the destination attributes.
 
     :param str attr: A source attribute
     :return: A list of destination attribute
-    :rtype: list[str]
     """
     outputs = cmds.listConnections(attr, source=False, plugs=True) or []
     for output in outputs:

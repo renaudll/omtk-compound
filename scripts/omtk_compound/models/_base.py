@@ -2,6 +2,7 @@
 Base model classes
 """
 
+from ..core._compound import Compound
 from ..vendor.Qt import QtCore
 
 
@@ -10,53 +11,47 @@ class BaseTableModel(QtCore.QAbstractTableModel):
     Intermediate QAbstractTableModel implementation
     """
 
-    _COLUMNS = []
+    _COLUMNS: list[str] = []
 
-    def __init__(self, entries=None):
+    def __init__(self, entries: list[Compound] | None = None) -> None:
         """
         :param entries: An optional list of compounds to display
-        :type entries: list[omtk_compound.Compound]
         """
-        super(BaseTableModel, self).__init__()
+        super().__init__()
         self._update(entries or [])
 
-    def _update(self, entries):
+    def _update(self, entries: list[Compound]) -> None:
         """
         Update internal model data.
 
         :param entries: New compounds
-        :type entries: list[omtk_compound.Compound]
         """
         self.entries = entries
 
-    def rowCount(self, _):  # pylint: disable=invalid-name
+    def rowCount(self, _) -> int:
         """
         Re-implement QtCore.QAbstractTableModel.rowCount
 
         :return: The number of rows
-        :rtype: int
         """
         return len(self.entries)
 
-    def columnCount(self, _):  # pylint: disable=invalid-name
+    def columnCount(self, _) -> int:
         """
         Re-implement QtCore.QAbstractTableModel.columnCount
 
         :return: The number of columns
-        :rtype: int
         """
         return len(self._COLUMNS)
 
-    def headerData(self, section, orientation, role):  # pylint: disable=invalid-name
+    def headerData(self, section: int, orientation: int, role: int) -> str | None:
         """
         Re-implement QtCore.QAbstractTableModel.headerData
 
-        :param int section: The header section
-        :param int orientation: The header orientation
-        :param int role: The data role
-        :return:
-        :rtype: str or None
+        :param section: The header section
+        :param orientation: The header orientation
+        :param role: The data role
         """
         if orientation == QtCore.Qt.Horizontal and role == QtCore.Qt.DisplayRole:
-            return str(self._COLUMNS[section])
+            return f"{self._COLUMNS[section]}"
         return None

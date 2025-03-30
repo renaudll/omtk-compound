@@ -3,11 +3,11 @@ Utility method for dealing with namespaces.
 """
 
 import contextlib
-
 import re
+from typing import List
 
 
-def get_parent(namespace):
+def get_parent(namespace: str) -> str:
     """
     Query the parent namespace of provided namespace
 
@@ -16,18 +16,16 @@ def get_parent(namespace):
     >>> get_parent('a')
     ''
 
-    :param str namespace: The child namespace
+    :param namespace: The child namespace
     :return: The parent namespace
-    :rtype: str
     """
     separator = ":"
     return separator.join(namespace.split(separator)[:-1])
 
 
-def get_all_namespaces():
+def get_all_namespaces() -> list[str]:
     """
     :return: List of all namespaces in the current Maya session
-    :rtype: list(str)
     """
     from maya import cmds
 
@@ -35,21 +33,20 @@ def get_all_namespaces():
     return cmds.namespaceInfo(listOnlyNamespaces=True, recurse=True)
 
 
-def join_namespace(*args):
+def join_namespace(*args: str) -> str:
     """
-
-    :param args:
-    :return:
+    Join multiple namespace arguments into a single namespace string.
     """
     return ":".join((arg.rstrip(":") for arg in args))
 
 
-def relative_namespace(namespace, parent_namespace):
+def relative_namespace(namespace: str, parent_namespace: str) -> str:
     """
+    Calculate the relative namespace given a parent namespace.
 
-    :param str namespace:
-    :param str parent_namespace:
-    :return:
+    :param namespace: The full namespace.
+    :param parent_namespace: The parent namespace.
+    :return: The relative namespace.
     """
     parent_namespace = parent_namespace or ""  # temporary
     prefix = parent_namespace.rstrip(":") + ":"
@@ -58,11 +55,10 @@ def relative_namespace(namespace, parent_namespace):
     return namespace
 
 
-def get_unique_namespace(namespace, pool=None):
+def get_unique_namespace(namespace: str, pool: list[str] | None = None) -> str:
     """
-    :param str namespace: The start namespace
+    :param namespace: The start namespace
     :return: A unique namespace
-    :rtype namespace
     """
     pool = pool or get_all_namespaces()
     prefix, suffix = re.match(
@@ -77,32 +73,29 @@ def get_unique_namespace(namespace, pool=None):
 
 
 @contextlib.contextmanager
-def with_temporary_namespace(namespace):
+def with_temporary_namespace(namespace: str) -> None:
     """
     Temporarily change the current namespace. Restore the original namespace afterward.
-    :param namespace: The namespace to change to. If will be create if it doesnt exist.
+    :param namespace: The namespace to change to. It will be created if it doesn't exist.
     """
     from maya import cmds
 
     old_namespace = cmds.namespaceInfo(currentNamespace=True)
     if not cmds.namespace(exists=namespace):
         cmds.namespace(add=namespace)
-    cmds.namespace.set(namespace)
+    cmds.namespace(set=namespace)
     yield
     cmds.namespace(set=old_namespace)
 
 
-def get_namespace(value):
+def get_namespace(value: object) -> str:
     """Get a namespace from an arbitrary value_.
 
-    :param object value: A value to extract a namespace from
+    :param value: A value to extract a namespace from
     :return: A namespace
-    :rtype: str
     """
 
-    # TODO: Deprecate this, we should alway use strings.
-    def _get(value_):
-        # type: (object) -> str
+    def _get(value_: object) -> str:
         try:
             return value_.namespace()
         except Exception:  # pylint: disable=broad-except
@@ -120,17 +113,15 @@ def get_namespace(value):
     return namespace
 
 
-def get_common_namespace(nodes):
+def get_common_namespace(nodes: List[object]) -> str:
     """
     Get the namespace of all provided nodes and find their common parent.
-    It no parent is found, the root namespace is returned.
+    If no parent is found, the root namespace is returned.
 
-    :param List[object] nodes: List of objects having a namespace.
+    :param nodes: List of objects having a namespace.
     :return: A common namespace.
-    :rtype n
     """
     common_namespaces = None
-    # TODO: Validate
     for node in nodes:
         namespace = get_namespace(node)
         if namespace:
@@ -146,11 +137,13 @@ def get_common_namespace(nodes):
     return None
 
 
-def is_child_of(child, parent):
+def is_child_of(child: str, parent: str) -> bool:
     """
-    :param str child:
-    :param str parent:
-    :return:
+    Check if the given child namespace is a descendant of the parent namespace.
+
+    :param child: The child namespace.
+    :param parent: The parent namespace.
+    :return: True if the child is a descendant of the parent, False otherwise.
     """
     if not child:
         return False

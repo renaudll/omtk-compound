@@ -1,7 +1,3 @@
-"""
-Model for displaying compounds in a QTableView.
-"""
-
 import logging
 import itertools
 from maya import cmds
@@ -9,7 +5,6 @@ from maya import cmds
 from omtk_compound.models._roles import DataRole
 from omtk_compound.core._utils_attr import reorder_attributes
 from omtk_compound.vendor.Qt import QtCore, QtGui
-
 
 _LOG = logging.getLogger(__name__)
 
@@ -21,10 +16,9 @@ class ModelAttributes(QtGui.QStandardItemModel):
 
     _COLUMNS = ["name", "type", "multi"]
 
-    def __init__(self, attributes=None):
+    def __init__(self, attributes: list[str] | None = None) -> None:
         """
         :param attributes: An optional list of attributes.
-        :type attributes: list[str]
         """
         super(ModelAttributes, self).__init__()
 
@@ -33,14 +27,13 @@ class ModelAttributes(QtGui.QStandardItemModel):
 
         self.set_data(attributes)
 
-    def removeRows(self, *args, **kwargs):  # pylint: disable=invalid-name
+    def removeRows(self, *args, **kwargs) -> bool:  # pylint: disable=invalid-name
         """
         Re-implement QtGui.QStandardItemModel.removeRows
 
         :param args: Any position arguments are forwarded to the parent implementation.
         :param kwargs: Any keyword arguments are forwarded to the parent implementation.
         :return: Where the rows removed?
-        :rtype: bool
         """
         # Hack: When doing a drag and drop in Qt,
         # it call insertRows followed by removeRows.
@@ -53,34 +46,32 @@ class ModelAttributes(QtGui.QStandardItemModel):
         finally:
             self.__reorder()
 
-    def __reorder(self):
+    def __reorder(self) -> None:
         """Apply new ordering to maya attributes."""
         root = self.invisibleRootItem()
         attributes = [root.child(row).data(DataRole) for row in range(root.rowCount())]
 
         node = attributes[0].split(".")[0]
         attribute_names = [attr.split(".")[-1] for attr in attributes]
-        _LOG.info("Reordering attributes: %s, %s", node, attribute_names)
+        _LOG.info(f"Reordering attributes: {node}, {attribute_names}")
         reorder_attributes(node, attribute_names)
 
-    def set_data(self, attributes):  # TODO: Rename
+    def set_data(self, attributes: list[str]) -> None:  # TODO: Rename
         """
         Set the model internal data
 
         :param attributes: The attributes to show
-        :type attributes: list[str]
         """
         self.beginResetModel()
         if attributes:
             self.__update(attributes)
         self.endResetModel()
 
-    def __update(self, attributes):  # pylint: disable=too-many-locals
+    def __update(self, attributes: list[str]) -> None:  # pylint: disable=too-many-locals
         """
         Build the internal tree.
 
         :param attributes: A list of attributes.
-        :return: The tree root item.
         """
         root = self.invisibleRootItem()
         root.setDragEnabled(False)
@@ -120,16 +111,15 @@ class ModelAttributes(QtGui.QStandardItemModel):
                 item_by_attr[attribute] = item1
 
     @staticmethod
-    def supportedDropActions():  # pylint: disable=invalid-name
+    def supportedDropActions() -> int:  # pylint: disable=invalid-name
         """
         Re-implement QtCore.QAbstractItemModel.supportedDropActions
 
         :return: The supported drop actions
-        :rtype: int
         """
         return QtCore.Qt.MoveAction
 
-    def setData(self, index, value, role):  # pylint: disable=invalid-name
+    def setData(self, index: QtCore.QModelIndex, value: str, role: int) -> bool:  # pylint: disable=invalid-name
         """
         Implement `QtCore.QAbstractItemModel.setData
 
@@ -137,25 +127,23 @@ class ModelAttributes(QtGui.QStandardItemModel):
         :param str value: The value to set
         :param int role: The set role
         :return: True if the set was successful
-        :rtype: bool
         """
         if role != QtCore.Qt.EditRole:
             return False
 
         item = self.itemFromIndex(index)
 
-        src_attr_path = index.data(DataRole)  # type: str
+        src_attr_path = index.data(DataRole)
         node = src_attr_path.split(".")[0]
         dst_attr_path = ".".join((node, value))
 
         # Validate the attribute is available
         if cmds.objExists(dst_attr_path):
-            cmds.warning("Attribute %r already exist." % str(dst_attr_path))
+            cmds.warning(f"Attribute {dst_attr_path!r} already exist.")
             return False
 
         cmds.renameAttr(src_attr_path, value)
 
-        # Update internal data
         item.setText(value)
         item.setData(dst_attr_path, DataRole)
 
@@ -163,7 +151,7 @@ class ModelAttributes(QtGui.QStandardItemModel):
         return True
 
 
-def _get_attribute_parent(attr):  # type: (str) -> str
+def _get_attribute_parent(attr: str) -> str:
     """Utility method that return an attribute parent."""
     node_name, attr_name = attr.split(".", 1)
     parents = cmds.attributeQuery(attr_name, node=node_name, listParent=True)

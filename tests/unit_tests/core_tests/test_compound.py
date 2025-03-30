@@ -13,10 +13,10 @@ from omtk_compound.core import Compound
 _MAYA_DEFAULT_NODES = None
 
 
-def _ls(**kwargs):  # todo: move to a pytest helper module, how does that work again?
+def _ls(**kwargs) -> set:  # todo: move to a pytest helper module, how does that work again?
     """
-    Wrapper around cmds.ls that return a set of nodes without thoses
-    that already  exist in an empty scene.
+    Wrapper around cmds.ls that return a set of nodes without those
+    that already exist in an empty scene.
     """
     result = set(cmds_.ls(**kwargs))
     result -= _MAYA_DEFAULT_NODES
@@ -121,7 +121,7 @@ def test_outputs(compound):
 
 
 def test_nodes(compound):
-    """Validate iterating through a compound will yield it's nodes."""
+    """Validate iterating through a compound will yield its nodes."""
     assert set(compound) == {"test:inputs", "test:outputs", "test:foobar"}
 
 
@@ -140,16 +140,14 @@ def test_metadata(compound):
     assert actual == expected
 
 
-def test_iter(compound):  # TODO: not the same thing is above?
-    """Validate if we iterate through a compound we yield it's node dagpaths."""
+def test_iter(compound):
+    """Validate if we iterate through a compound we yield its node dagpaths."""
     assert tuple(iter(compound)) == tuple(compound)
 
 
 def test_count(compound):
     """Validate the `count` method"""
-    assert len(compound) == 3  # TODO: Do we want to count inn and out?
-
-
+    assert len(compound) == 3
 def test_explode(cmds, compound):
     """Validate we can explode a compound."""
     compound.explode()
@@ -201,10 +199,6 @@ def test_explode_connections(cmds, compound2):
     ]
 
 
-# TODO: Test that we can preserve scalar values
-# def test_explode_preserve_matrix(cmds, compound2)
-
-
 @pytest.mark.usefixtures("cmds")
 def test_export(compound, tmp_path):
     """Validate we can export a compound"""
@@ -238,7 +232,7 @@ def test_add_output_attr(cmds, compound):
 
 @pytest.mark.usefixtures("cmds")
 def test_has_input_attr(compound):
-    """Validate we can query if a compound have a certain input attribute."""
+    """Validate we can query if a compound has a certain input attribute."""
     assert not compound.has_input_attr("testInput")
     compound.add_input_attr("testInput")
     assert compound.has_input_attr("testInput")
@@ -246,7 +240,7 @@ def test_has_input_attr(compound):
 
 @pytest.mark.usefixtures("cmds")
 def test_has_output_attr(compound):
-    """Validate we can query if a compound have a certain output attribute."""
+    """Validate we can query if a compound has a certain output attribute."""
     assert not compound.has_output_attr("testOutput")
     compound.add_output_attr("testOutput")
     assert compound.has_output_attr("testOutput")

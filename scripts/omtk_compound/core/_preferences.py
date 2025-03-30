@@ -11,8 +11,6 @@ can be overwritten with OMTK_COMPONENT_DEFAULT_AUTHOR.
 import logging
 import os
 
-import six
-
 from maya import cmds
 
 _LOG = logging.getLogger(__name__)
@@ -21,7 +19,7 @@ _SCHEMA = {"compound_location": "~/.omtk/compounds", "default_author": None}
 _PREFIX = "omtk.compound."
 
 
-class Preferences(object):
+class Preferences:
     """
     Dict-like object that hold value of preferences.
 
@@ -32,18 +30,17 @@ class Preferences(object):
     - Use the default value.
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs) -> None:
         self._store = kwargs
 
-        # Fail is any provided value is not in the schema
+        # Fail if any provided value is not in the schema
         extra_fields = set(kwargs) - set(_SCHEMA)
         if extra_fields:
             raise ValueError(
-                "The following values are not in the schema: %s"
-                % ", ".join(repr(field) for field in sorted(extra_fields))
+                f"The following values are not in the schema: {', '.join(repr(field) for field in sorted(extra_fields))}"
             )
 
-    def __getitem__(self, item):
+    def __getitem__(self, item: str) -> str | None:
         # First try to get the value from a manual override
         try:
             return self._store[item]
@@ -65,39 +62,37 @@ class Preferences(object):
         # Otherwise return the default value
         return _SCHEMA[item]
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: str, value: str) -> None:
         self._store[key] = value
 
     @staticmethod
-    def _get_environ_var_name(key):
+    def _get_environ_var_name(key: str) -> str:
         """
-        :param str key: The entry key
+        :param key: The entry key
         :return: The associated environment variable name
-        :rtype: str
         """
         return (_PREFIX + key).upper().replace(".", "_")
 
     @staticmethod
-    def _get_option_var_name(key):
+    def _get_option_var_name(key: str) -> str:
         """Compute an optionVar name from an entry.
 
-        :param str key: The entry key
+        :param key: The entry key
         :return: The optionVar name
-        :rtype: str
         """
         return _PREFIX + key
 
-    def save(self):
+    def save(self) -> None:
         """Save all preferences to optionVar."""
         for key in _SCHEMA:
             value = self[key]
             # for now, only string values are supported
-            if isinstance(value, six.string_types):
+            if isinstance(value, str):
                 option_var = self._get_option_var_name(key)
                 _LOG.debug("Saving optionVar %r", option_var)
                 cmds.optionVar(stringValue=(option_var, value))
 
-    # def load(self):
+    # def load(self) -> None:
     #     """ Load settings from optionVar. """
     #     for key in self:
     #         option_var = self._getOptionVar(key)
@@ -106,7 +101,7 @@ class Preferences(object):
     #             value = cmds.optionVar(query=option_var)
     #             self[key] = value
 
-    def uninstall(self):
+    def uninstall(self) -> None:
         """Remove all preferences from optionVar."""
         for key in _SCHEMA:
             option_var = self._get_option_var_name(key)
@@ -117,16 +112,15 @@ class Preferences(object):
     # Properties
 
     @property
-    def default_author(self):
+    def default_author(self) -> str | None:
         """
         :return: The author value to use for new compounds.
         """
         return self["default_author"]
 
     @property
-    def compound_location(self):
+    def compound_location(self) -> str:
         """
-        :return: The
-        :return:
+        :return: The expanded location for compounds.
         """
         return os.path.expanduser(self["compound_location"])
