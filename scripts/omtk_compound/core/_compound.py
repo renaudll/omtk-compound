@@ -257,12 +257,19 @@ class Compound:
         """
         return cmds.objExists("%s.%s" % (self.output, attr_name))
 
-    def expose_input_attr(self, dagpath: str) -> str:
+    def expose_input_attr(
+        self,
+        dagpath: str,
+        long_name: str | None = None,
+        short_name: str | None = None,
+    ) -> str:
         """Expose an attribute as an input attribute of the compound.
 
-        :param dagpath: The attribute to expose
+        :param dagpath: An attribute to expose. i.e.: "transform.translateX"
+        :param long_name: Optional long name of the exposed attribute.
+        :param short_name: Optional short name of the exposed attribute.
         :return: The dagpath of the exposed attribute
-        :raises: ValueError: If the attribute is already a connection destination
+        :raises: ValueError: If the attribute is already a connection destination or the chosen name is not free.
         """
         attr = pymel.Attribute(dagpath)
         dagpath = str(attr)
@@ -280,7 +287,7 @@ class Compound:
 
         src_node = str(attr.node())
         src_dagpath = _utils_attr.expose_attribute(
-            src_node, self.input, attr.longName()
+            src_node, self.input, attr.longName(), long_name=long_name, short_name=short_name
         )
 
         mattr = pymel.Attribute(src_dagpath).__apimattr__()
@@ -290,13 +297,20 @@ class Compound:
 
         return src_dagpath
 
-    def expose_output_attr(self, dagpath: str) -> str:
+    def expose_output_attr(
+        self,
+        dagpath: str,
+        long_name: str | None = None,
+        short_name: str | None = None,
+    ) -> str:
         """
         Expose an attribute as an output attribute of the compound.
 
         :param dagpath: The attribute to expose
+        :param long_name: Optional long name of the exposed attribute.
+        :param short_name: Optional short name of the exposed attribute.
         :return: The dagpath of the exposed attribute
-        :raises: ValueError: If the attribute is the source of an existing connection.
+        :raises: ValueError: If the attribute is the source of an existing connection or the chosen name is not free.
         """
         attr = pymel.Attribute(dagpath)
         dagpath = str(attr)
@@ -314,7 +328,9 @@ class Compound:
 
         src_node = str(attr.node())
         attr_name = str(attr.longName())
-        dst_dagpath = _utils_attr.expose_attribute(src_node, self.output, attr_name)
+        dst_dagpath = _utils_attr.expose_attribute(
+            src_node, self.output, attr_name, long_name=long_name, short_name=short_name
+        )
 
         mattr = pymel.Attribute(dst_dagpath).__apimattr__()
         mattr.setWritable(True)

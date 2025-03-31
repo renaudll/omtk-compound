@@ -12,7 +12,12 @@ _LOG = logging.getLogger(__name__)
 
 
 def expose_attribute(
-    src_node: str, dst_node: str, src_name: str, dst_name: str = None
+    src_node: str,
+    dst_node: str,
+    src_name: str,
+    dst_name: str = None,
+    long_name: str | None = None,
+    short_name: str | None = None,
 ) -> str:
     src_name = src_name.split("[", 1)[0]
     dst_name = dst_name or src_name
@@ -20,11 +25,11 @@ def expose_attribute(
     src_path = f"{src_node}.{src_name}"
 
     src_attr = pymel.Attribute(src_path)
-    root_attr = src_attr.array() if src_attr.isElement() else src_attr
-    attr_long_name = root_attr.longName()
-    attr_short_name = root_attr.shortName()
+    src_attr_root = src_attr.array() if src_attr.isElement() else src_attr
+    src_attr_long_name = src_attr_root.longName()
+    src_attr_short_name = src_attr_root.shortName()
 
-    _LOG.debug("Exposed attribute is %r", root_attr)
+    _LOG.debug("Exposed attribute is %r", src_attr_root)
 
     existing_long_names = cmds.listAttr(str(dst_node))
     existing_short_names = cmds.listAttr(str(dst_node), shortNames=True)
@@ -32,28 +37,35 @@ def expose_attribute(
     _LOG.debug("Existing long names: %s", existing_long_names)
     _LOG.debug("Existing short names: %s", existing_short_names)
 
-    unique_long_name = _utils_namespace.get_unique_namespace(
-        attr_long_name, existing_long_names
+    # If we were given specific long_name or short_name, ensure they are not already used.
+    if long_name and long_name in existing_long_names:
+        raise ValueError(f"An attribute already exist on {dst_node} with long name: {long_name}.")
+    if short_name and short_name in existing_short_names:
+        raise ValueError(f"An attribute already exist on {dst_node} with short name: {short_name}.")
+
+    long_name = long_name or _utils_namespace.get_unique_namespace(
+        src_attr_long_name, existing_long_names
     )
-    unique_short_name = _utils_namespace.get_unique_namespace(
-        attr_short_name, existing_short_names
+    # TODO: What happen if we only provide the long name?
+    short_name = short_name or _utils_namespace.get_unique_namespace(
+        src_attr_short_name, existing_short_names
     )
 
-    dst_path_conformed = f"{dst_node}.{unique_long_name}"
-    _LOG.debug("Conformed %r to %r", dst_name, unique_short_name)
+    dst_path_conformed = f"{dst_node}.{long_name}"
+    _LOG.debug("Conformed %r to %r", dst_name, short_name)
 
     if src_attr.type() == "generic":
         _expose_generic_attribute(
-            src_attr, dst_node, unique_long_name, unique_short_name
+            src_attr, dst_node, long_name, short_name
         )
     else:
         _expose_attribute_mel(
             src_attr,
             dst_node,
-            attr_long_name,
-            attr_short_name,
-            unique_long_name,
-            unique_short_name,
+            src_attr_long_name,
+            src_attr_short_name,
+            long_name,
+            short_name,
         )
 
     return dst_path_conformed
